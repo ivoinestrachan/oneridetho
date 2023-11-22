@@ -2,8 +2,7 @@ import {Ride} from "@/components/Ride";
 
 const book = () => {
     return (
-        <div className="px-5 mt-10">
-           <div>Book a Ride</div>
+        <div className="mt-10 px-5">
            <Ride />
         </div>
     );
