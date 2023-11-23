@@ -25,7 +25,7 @@ function SimpleMap() {
   return (
     <div className="sm:h-[78vh] sm:w-[65%]  h-[100vh] w-[100%] sm:mt-0 mt-5">
       <GoogleMapReact
-        bootstrapURLKeys={{ key: process.env.API_KEY || "AIzaSyBAkQUyR8JeONd2R7IoocTE4FWQChhfxzQ" }}
+        bootstrapURLKeys={{ key: process.env.API_KEY || "" }}
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
         options={mapOptions}
@@ -39,7 +39,7 @@ function SimpleMap() {
 
 const Ride = () => {
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.API_KEY || "AIzaSyBAkQUyR8JeONd2R7IoocTE4FWQChhfxzQ",
+    googleMapsApiKey: process.env.API_KEY || "",
     libraries: ["places"],
   });
 
