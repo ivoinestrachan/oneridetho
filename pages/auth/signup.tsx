@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { signIn } from 'next-auth/react';
+import router, { useRouter } from 'next/router';
 
 type ContactProps = {
     setEmail: React.Dispatch<React.SetStateAction<string>>;
@@ -92,25 +93,25 @@ const Signup = () => {
   
     const nextStep = async () => {
         if (step === 2) {
-          try {
-            const result = await signIn('credentials', {
-              redirect: false,
-              email,
-              password,
-            });
-      
-            if (result && result.error) {
-              setErrorMessage(result.error);
-            } else {
-              // redirect after signup
+            try {
+                const result = await signIn('credentials', {
+                    redirect: false,
+                    email,
+                    password,
+                });
+
+                if (result && result.error) {
+                    setErrorMessage(result.error);
+                } else {
+                    router.push('/');
+                }
+            } catch (error) {
+                if (error instanceof Error) {
+                    setErrorMessage(error.message);
+                } else {
+                    setErrorMessage('An unexpected error occurred.');
+                }
             }
-          } catch (error) {
-            if (error instanceof Error) {
-              setErrorMessage(error.message);
-            } else {
-              setErrorMessage('An unexpected error occurred.');
-            }
-          }
         } else {
           setStep(step + 1);
         }
