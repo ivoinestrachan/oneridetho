@@ -139,7 +139,7 @@ const Ride = () => {
     <div className="mt-5 sm:flex justify-between">
       <div className="space-y-4">
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
-        <div className="flex items-center  justify-between sm:w-[173%] w-[97%] sm:pt-10">
+        <div className="flex items-center  justify-between sm:w-[173%] w-[100%] sm:pt-10">
           <div>
             <input
               ref={pickupInputRef}
@@ -162,9 +162,9 @@ const Ride = () => {
             />
           </div>
         </div>
-        <div className="flex items-center border border-gray-200 rounded-md py-2 pl-3 justify-between sm:w-[150%]">
+        <div className="flex items-center border border-gray-200 rounded-md py-2 pl-3 justify-between sm:w-[150%] w-[95%]">
           <div>Fare: ${fare}</div>
-          <div className="flex items-center gap-2 w-[25%]">
+          <div className="flex items-center gap-2 w-[26%]">
             <div>
               <IoMdPerson size={24}/>
             </div>
