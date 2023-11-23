@@ -1,0 +1,89 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("POSTGRES_PRISMA_URL")
+    directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+enum Gender {
+    Male
+    Female
+    Other
+}
+
+enum RideStatus {
+    Requested
+    InProgress
+    Completed
+    Cancelled
+}
+
+model User {
+    id       Int       @id @default(autoincrement())
+    name     String
+    photoUrl String?
+    dob      DateTime
+    gender   Gender?
+    email    String    @unique
+    phone    String?   @unique
+    rating   Float?    @default(0)
+    account  Account?
+    rides    Ride[]    @relation("UserRides")
+    sessions Session[] @relation("UserSessions")
+}
+
+model Account {
+    id       Int    @id @default(autoincrement())
+    userId   Int    @unique
+    user     User   @relation(fields: [userId], references: [id])
+    email    String @unique
+    password String
+}
+
+model Session {
+    id           Int      @id @default(autoincrement())
+    userId       Int
+    user         User     @relation(fields: [userId], references: [id], name: "UserSessions")
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    expiresAt    DateTime
+    sessionToken String   @unique
+}
+
+model Driver {
+    id           Int     @id @default(autoincrement())
+    name         String
+    photoUrl     String?
+    carType      String
+    licensePlate String
+    carImageUrl  String?
+    rating       Float?  @default(0)
+    phone        String? @unique
+    rides        Ride[]  @relation("DriverRides")
+    email        String  @unique
+    password     String
+}
+
+model Ride {
+    id              Int        @id @default(autoincrement())
+    pickupLocation  Json
+    dropoffLocation Json
+    pickupTime      DateTime
+    dropoffTime     DateTime?
+    fare            Float
+    tip             Float?     @default(0)
+    status          RideStatus
+    user            User       @relation("UserRides", fields: [userId], references: [id])
+    userId          Int
+    driver          Driver     @relation("DriverRides", fields: [driverId], references: [id])
+    driverId        Int
+}
+
+model Location {
+    id   Int   @id @default(autoincrement())
+    lat  Float
+    long Float
+}
