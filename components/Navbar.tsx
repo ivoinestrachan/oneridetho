@@ -38,13 +38,19 @@ const Navbar = () => {
                   Sign Up
                 </button>
               </Link>
-              <Link href="/auth/login">
-                <button className="font-sans font-bold">Login</button>
-              </Link>
             </>
           ) : (
-            <div>
-            <span>{session.user?.email}</span>
+            <div className="flex items-center gap-3">
+              <div>
+                <Image
+                  src={session.user?.image || "https://res.cloudinary.com/dxmrcocqb/image/upload/v1700749220/Social_Media_Chatting_Online_Blank_Profile_Picture_Head_And_Body_Icon_People_Standing_Icon_Grey_Background_generated_qnojdz.jpg"}
+                  alt="pfp"
+                  height={40}
+                  width={40}
+                  className="rounded-full"
+                />
+              </div>
+              <div>{session.user?.email}</div>
             </div>
           )}
         </div>

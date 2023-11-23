@@ -1,7 +1,17 @@
 const login = () => {
     return (
         <div>
-            Enter
+         <div>
+            <input placeholder="Full Name" />
+         </div>
+
+         <div>
+            <input placeholder="Password" />
+         </div>
+
+         <div>
+            <button>Login</button>
+         </div>
         </div>
     );
 }

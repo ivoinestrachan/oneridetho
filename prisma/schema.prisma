@@ -29,7 +29,7 @@ model User {
     gender   Gender?
     email    String    @unique
     phone    String?   @unique
-    rating   Float?    @default(0)
+    rating   Float?    @default(5)
     account  Account?
     rides    Ride[]    @relation("UserRides")
     sessions Session[] @relation("UserSessions")
@@ -60,7 +60,7 @@ model Driver {
     carType      String
     licensePlate String
     carImageUrl  String?
-    rating       Float?  @default(0)
+    rating       Float?  @default(5)
     phone        String? @unique
     rides        Ride[]  @relation("DriverRides")
     email        String  @unique
@@ -74,7 +74,7 @@ model Ride {
     pickupTime      DateTime
     dropoffTime     DateTime?
     fare            Float
-    tip             Float?     @default(0)
+    tip             Float?     @default(5)
     status          RideStatus
     user            User       @relation("UserRides", fields: [userId], references: [id])
     userId          Int
