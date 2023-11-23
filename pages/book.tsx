@@ -1,3 +1,18 @@
+import { Ride } from "@/components/Ride";
+
+const Book = () => {
+
+
+    return (
+        <div className="mt-10 px-5">
+           <Ride />
+        </div>
+    );
+}
+
+export default Book;
+
+/*
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -24,3 +39,5 @@ const Book = () => {
 }
 
 export default Book;
+
+*/

@@ -80,7 +80,9 @@ model Ride {
     userId          Int
     driver          Driver     @relation("DriverRides", fields: [driverId], references: [id])
     driverId        Int
+    passengerCount  Int        @default(1) 
 }
+
 
 model Location {
     id   Int   @id @default(autoincrement())

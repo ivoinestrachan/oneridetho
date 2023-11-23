@@ -1,6 +1,11 @@
 import GoogleMapReact from "google-map-react";
 import { useEffect, useRef, useState } from "react";
-import { Autocomplete, useLoadScript } from "@react-google-maps/api";
+import {
+  Autocomplete,
+  useLoadScript,
+  DistanceMatrixService,
+} from "@react-google-maps/api";
+import { IoMdPerson } from "react-icons/io";
 
 interface MapProps {
   text: string;
@@ -38,6 +43,50 @@ function SimpleMap() {
 }
 
 const Ride = () => {
+  const [distance, setDistance] = useState<string | null>(null);
+  
+  const [passengers, setPassengers] = useState(1);
+
+  const [fare, setFare] = useState("10.00"); 
+
+  const calculateFare = (distance: number, passengers: number): string => {
+    const baseFare = 10;
+    const distanceCharge = distance * 2;
+    const passengerCharge = (passengers - 1) * 2; 
+    const totalFare = baseFare + distanceCharge + passengerCharge;
+    return totalFare.toFixed(2); 
+  };
+
+
+  useEffect(() => {
+    if (distance) {
+      setFare(calculateFare(parseFloat(distance), passengers));
+    }
+  }, [passengers]); 
+
+
+  const handleCalculateDistance = () => {
+    if (pickupInputRef.current && dropoffInputRef.current) {
+      const service = new window.google.maps.DistanceMatrixService();
+      service.getDistanceMatrix(
+        {
+          origins: [pickupInputRef.current.value],
+          destinations: [dropoffInputRef.current.value],
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (response, status) => {
+          if (status === "OK" && response) {
+            const distanceInMiles =
+              response.rows[0].elements[0].distance.value / 1609.34;
+              setFare(calculateFare(distanceInMiles, passengers));
+          } else {
+            console.error("Error was: " + status);
+          }
+        }
+      );
+    }
+  };
+
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.API_KEY || "",
     libraries: ["places"],
@@ -104,8 +153,27 @@ const Ride = () => {
             />
           </div>
         </div>
+        <div className="flex items-center border border-gray-200 rounded-md py-2 pl-3 justify-between sm:w-[150%]">
+          <div>Fare: ${fare}</div>
+          <div className="flex items-center gap-2 w-[25%]">
+            <div>
+              <IoMdPerson size={24}/>
+            </div>
+            <div>
+            <input 
+            type="number" 
+            className="border-black border-2 rounded-[4px] w-[40px] py-1 outline-none text-center"
+            value={passengers}
+            onChange={e => setPassengers(Math.max(1, parseInt(e.target.value)))} 
+          />
+            </div>
+          </div>
+        </div>
         <div>
-          <button className="py-2 bg-black text-white pl-4 pr-4 rounded-md">
+          <button
+            className="py-2 bg-black text-white pl-4 pr-4 rounded-md"
+            onClick={handleCalculateDistance}
+          >
             Pickup Now
           </button>
         </div>
