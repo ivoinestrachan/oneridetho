@@ -1,5 +1,6 @@
 import GoogleMapReact from "google-map-react";
-import Autocomplete from "react-google-autocomplete";
+import { useEffect, useRef, useState } from "react";
+import { Autocomplete, useLoadScript } from "@react-google-maps/api";
 
 interface MapProps {
   text: string;
@@ -24,7 +25,7 @@ function SimpleMap() {
   return (
     <div className="sm:h-[78vh] sm:w-[65%]  h-[100vh] w-[100%] sm:mt-0 mt-5">
       <GoogleMapReact
-        bootstrapURLKeys={{ key: process.env.API_KEY || "" }}
+        bootstrapURLKeys={{ key: process.env.API_KEY || "AIzaSyBAkQUyR8JeONd2R7IoocTE4FWQChhfxzQ" }}
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
         options={mapOptions}
@@ -37,9 +38,44 @@ function SimpleMap() {
 }
 
 const Ride = () => {
-  const onPlaceSelected = (place: any, inputRef: string) => {
-    console.log(place);
-  };
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.API_KEY || "AIzaSyBAkQUyR8JeONd2R7IoocTE4FWQChhfxzQ",
+    libraries: ["places"],
+  });
+
+  const pickupInputRef = useRef<HTMLInputElement>(null);
+  const dropoffInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    if (!pickupInputRef.current || !dropoffInputRef.current) {
+      return;
+    }
+
+    const pickupAutocomplete = new window.google.maps.places.Autocomplete(
+      pickupInputRef.current,
+      { types: ["geocode"] }
+    );
+
+    const dropoffAutocomplete = new window.google.maps.places.Autocomplete(
+      dropoffInputRef.current,
+      { types: ["geocode"] }
+    );
+
+    pickupAutocomplete.addListener("place_changed", () => {
+      const place = pickupAutocomplete.getPlace();
+    });
+
+    dropoffAutocomplete.addListener("place_changed", () => {
+      const place = dropoffAutocomplete.getPlace();
+    });
+
+    return () => {
+      window.google.maps.event.clearInstanceListeners(pickupAutocomplete);
+      window.google.maps.event.clearInstanceListeners(dropoffAutocomplete);
+    };
+  }, [isLoaded]);
 
   return (
     <div className="mt-5 sm:flex justify-between">
@@ -47,12 +83,10 @@ const Ride = () => {
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
         <div className="flex items-center  justify-between sm:w-[173%] w-[97%] sm:pt-10">
           <div>
-            <Autocomplete
+            <input
+              ref={pickupInputRef}
               placeholder="Pickup Location"
               className="outline-none bg-gray-200 py-3  pl-2 rounded-md sm:w-[190%] w-[150%]"
-              onPlaceSelected={(place) => onPlaceSelected(place, "pickup")}
-              types={["(regions)"]}
-              apiKey={process.env.API_KEY || ""}
             />
           </div>
           <div>
@@ -63,12 +97,10 @@ const Ride = () => {
         </div>
         <div className="flex items-center">
           <div>
-            <Autocomplete
+            <input
+              ref={dropoffInputRef}
               placeholder="Dropoff Location"
               className="outline-none bg-gray-200 py-3  pl-2 rounded-md sm:w-[190%] w-[150%]"
-              onPlaceSelected={(place) => onPlaceSelected(place, "dropoff")}
-              types={["(regions)"]}
-              apiKey={process.env.API_KEY || ""}
             />
           </div>
         </div>
