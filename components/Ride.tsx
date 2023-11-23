@@ -104,12 +104,20 @@ const Ride = () => {
 
     const pickupAutocomplete = new window.google.maps.places.Autocomplete(
       pickupInputRef.current,
-      { types: ["geocode"] }
+      { 
+        types: ["geocode"],
+        strictBounds: true,
+        componentRestrictions: { country: "BS" } 
+      }
     );
-
+    
     const dropoffAutocomplete = new window.google.maps.places.Autocomplete(
       dropoffInputRef.current,
-      { types: ["geocode"] }
+      { 
+        types: ["geocode"],
+        strictBounds: true   ,
+        componentRestrictions: { country: "BS" } 
+      }
     );
 
     pickupAutocomplete.addListener("place_changed", () => {
@@ -125,6 +133,7 @@ const Ride = () => {
       window.google.maps.event.clearInstanceListeners(dropoffAutocomplete);
     };
   }, [isLoaded]);
+  
 
   return (
     <div className="mt-5 sm:flex justify-between">
