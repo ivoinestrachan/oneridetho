@@ -48,11 +48,17 @@ const Ride = () => {
   const [distance, setDistance] = useState<string | null>(null);
   const [passengers, setPassengers] = useState(1);
   const [fare, setFare] = useState("10.00");
+  const [pickupClicked, setPickupClicked] = useState(false);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.API_KEY || "",
     libraries: ["places"],
   });
+
+  const handlePickupClick = () => {
+    handleCalculateDistance();
+    setPickupClicked(true);
+  };
 
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const dropoffInputRef = useRef<HTMLInputElement>(null);
@@ -185,13 +191,23 @@ const Ride = () => {
             </div>
           </div>
         </div>
-        <div>
-          <button
-            className="py-2 bg-black text-white pl-4 pr-4 rounded-md"
-            onClick={handleCalculateDistance}
-          >
-            Pickup Now
-          </button>
+        <div className="flex items-center gap-2">
+          <div>
+            <button
+              className="py-2 bg-black text-white pl-4 pr-4 rounded-md"
+              onClick={handlePickupClick}
+            >
+              Pickup Now
+            </button>
+          </div>
+
+          <div>
+            {pickupClicked && (
+              <button className="py-2 bg-black text-white pl-4 pr-4 rounded-md">
+                Book
+              </button>
+            )}
+          </div>
         </div>
       </div>
       <SimpleMap />
