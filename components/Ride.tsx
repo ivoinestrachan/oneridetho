@@ -8,6 +8,7 @@ import {
   Polyline,
 } from "@react-google-maps/api";
 import { IoMdPerson } from "react-icons/io";
+import router from "next/router";
 
 interface MapProps {
   text: string;
@@ -62,6 +63,7 @@ const Ride = () => {
 
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const dropoffInputRef = useRef<HTMLInputElement>(null);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
 
   const calculateFare = (distance: number, passengers: number): string => {
     const baseFare = 10;
@@ -107,6 +109,33 @@ const Ride = () => {
     }
   };
 
+  const handleBooking = () => {
+    const pickupLocation = pickupInputRef.current?.value;
+    const dropoffLocation = dropoffInputRef.current?.value;
+
+    if (pickupLocation && dropoffLocation) {
+      localStorage.setItem(
+        "rideDetails",
+        JSON.stringify({
+          pickup: pickupLocation,
+          dropoff: dropoffLocation,
+          fare: fare,
+          passengers: passengers,
+        })
+      );
+
+      router.push({
+        pathname: "/checkout",
+        query: {
+          pickup: pickupLocation,
+          dropoff: dropoffLocation,
+          fare: fare,
+          passengers: passengers,
+        },
+      });
+    }
+  };
+
   useEffect(() => {
     if (!isLoaded) return;
 
@@ -117,7 +146,7 @@ const Ride = () => {
     const pickupAutocomplete = new window.google.maps.places.Autocomplete(
       pickupInputRef.current,
       {
-      //  types: ["geocode"],
+        //  types: ["geocode"],
         strictBounds: true,
         componentRestrictions: { country: "BS" },
       }
@@ -145,6 +174,23 @@ const Ride = () => {
       window.google.maps.event.clearInstanceListeners(dropoffAutocomplete);
     };
   }, [isLoaded]);
+
+  useEffect(() => {
+    if (router.query.editing) {
+      const savedDetails = localStorage.getItem("rideDetails");
+      if (savedDetails) {
+        const details = JSON.parse(savedDetails);
+        if (details.pickup && pickupInputRef.current)
+          pickupInputRef.current.value = details.pickup;
+        if (details.dropoff && dropoffInputRef.current)
+          dropoffInputRef.current.value = details.dropoff;
+        if (details.fare) setFare(details.fare);
+        if (details.passengers) setPassengers(details.passengers);
+      }
+    } else {
+      localStorage.removeItem("rideDetails");
+    }
+  }, []);
 
   return (
     <div className="mt-5 sm:flex justify-between">
@@ -203,7 +249,10 @@ const Ride = () => {
 
           <div>
             {pickupClicked && (
-              <button className="py-2 bg-black text-white pl-4 pr-4 rounded-md">
+              <button
+                className="py-2 bg-black text-white pl-4 pr-4 rounded-md"
+                onClick={handleBooking}
+              >
                 Book
               </button>
             )}

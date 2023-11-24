@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import home from "../assets/homepage.svg";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -31,9 +32,11 @@ export default function Home() {
             trust that your journey<br></br> will be safe, reliable, and
             affordable.
           </div>
+          <Link href="/book">
           <div>
             <button className="py-3 bg-black text-white pl-12 pr-12 rounded-md mt-5">Book a Ride</button>
           </div>
+          </Link>
         </div>
         <div className="flex justify-center">
           <Image
