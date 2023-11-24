@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import {
   Autocomplete,
   useLoadScript,
-  DistanceMatrixService,
+  GoogleMap,
+  Marker,
+  Polyline,
 } from "@react-google-maps/api";
 import { IoMdPerson } from "react-icons/io";
 
@@ -44,26 +46,38 @@ function SimpleMap() {
 
 const Ride = () => {
   const [distance, setDistance] = useState<string | null>(null);
-  
   const [passengers, setPassengers] = useState(1);
+  const [fare, setFare] = useState("10.00");
 
-  const [fare, setFare] = useState("10.00"); 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.API_KEY || "",
+    libraries: ["places"],
+  });
+
+  const pickupInputRef = useRef<HTMLInputElement>(null);
+  const dropoffInputRef = useRef<HTMLInputElement>(null);
 
   const calculateFare = (distance: number, passengers: number): string => {
     const baseFare = 10;
     const distanceCharge = distance * 2;
-    const passengerCharge = (passengers - 1) * 2; 
-    const totalFare = baseFare + distanceCharge + passengerCharge;
-    return totalFare.toFixed(2); 
-  };
+    const passengerCharge = (passengers - 1) * 2;
 
+    const currentHour = new Date().getHours();
+
+    const isNightFee = currentHour >= 23 || currentHour < 6;
+
+    const nightgFee = isNightFee ? 5 : 0;
+
+    const totalFare = baseFare + distanceCharge + passengerCharge + nightgFee;
+
+    return totalFare.toFixed(2);
+  };
 
   useEffect(() => {
     if (distance) {
       setFare(calculateFare(parseFloat(distance), passengers));
     }
-  }, [passengers]); 
-
+  }, [passengers]);
 
   const handleCalculateDistance = () => {
     if (pickupInputRef.current && dropoffInputRef.current) {
@@ -78,7 +92,7 @@ const Ride = () => {
           if (status === "OK" && response) {
             const distanceInMiles =
               response.rows[0].elements[0].distance.value / 1609.34;
-              setFare(calculateFare(distanceInMiles, passengers));
+            setFare(calculateFare(distanceInMiles, passengers));
           } else {
             console.error("Error was: " + status);
           }
@@ -86,14 +100,6 @@ const Ride = () => {
       );
     }
   };
-
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.API_KEY || "",
-    libraries: ["places"],
-  });
-
-  const pickupInputRef = useRef<HTMLInputElement>(null);
-  const dropoffInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -104,19 +110,19 @@ const Ride = () => {
 
     const pickupAutocomplete = new window.google.maps.places.Autocomplete(
       pickupInputRef.current,
-      { 
+      {
         types: ["geocode"],
         strictBounds: true,
-        componentRestrictions: { country: "BS" } 
+        componentRestrictions: { country: "BS" },
       }
     );
-    
+
     const dropoffAutocomplete = new window.google.maps.places.Autocomplete(
       dropoffInputRef.current,
-      { 
+      {
         types: ["geocode"],
-        strictBounds: true   ,
-        componentRestrictions: { country: "BS" } 
+        strictBounds: true,
+        componentRestrictions: { country: "BS" },
       }
     );
 
@@ -133,13 +139,12 @@ const Ride = () => {
       window.google.maps.event.clearInstanceListeners(dropoffAutocomplete);
     };
   }, [isLoaded]);
-  
 
   return (
     <div className="mt-5 sm:flex justify-between">
       <div className="space-y-4">
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
-        <div className="flex items-center  justify-between sm:w-[173%] w-[100%] sm:pt-10">
+        <div className="flex items-center  justify-between sm:w-[173%] w-[102%] sm:pt-10">
           <div>
             <input
               ref={pickupInputRef}
@@ -166,15 +171,17 @@ const Ride = () => {
           <div>Fare: ${fare}</div>
           <div className="flex items-center gap-2 w-[26%]">
             <div>
-              <IoMdPerson size={24}/>
+              <IoMdPerson size={24} />
             </div>
             <div>
-            <input 
-            type="number" 
-            className="border-black border-2 rounded-[4px] w-[40px] py-1 outline-none text-center"
-            value={passengers}
-            onChange={e => setPassengers(Math.max(1, parseInt(e.target.value)))} 
-          />
+              <input
+                type="number"
+                className="border-black border-2 rounded-[4px] w-[40px] py-1 outline-none text-center"
+                value={passengers}
+                onChange={(e) =>
+                  setPassengers(Math.max(1, parseInt(e.target.value)))
+                }
+              />
             </div>
           </div>
         </div>
