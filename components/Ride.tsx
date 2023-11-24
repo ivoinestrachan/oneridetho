@@ -117,7 +117,7 @@ const Ride = () => {
     const pickupAutocomplete = new window.google.maps.places.Autocomplete(
       pickupInputRef.current,
       {
-        types: ["geocode"],
+      //  types: ["geocode"],
         strictBounds: true,
         componentRestrictions: { country: "BS" },
       }
@@ -126,7 +126,7 @@ const Ride = () => {
     const dropoffAutocomplete = new window.google.maps.places.Autocomplete(
       dropoffInputRef.current,
       {
-        types: ["geocode"],
+        //types: ["geocode"],
         strictBounds: true,
         componentRestrictions: { country: "BS" },
       }
