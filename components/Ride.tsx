@@ -246,7 +246,7 @@ const Ride = () => {
   }, []);
 
   return (
-    <div className="mt-5 sm:flex justify-between sm:bg-none bg-white sm:py-0 py-5 sm:pl-0 sm:pr-0 pl-3 pr-3 rounded-md sm:relative sm:top-0 relative top-[420px]">
+    <div className="mt-5 sm:flex justify-between sm:bg-none bg-white sm:py-0 py-4 sm:pl-0 sm:pr-0 pl-3 pr-3 rounded-md sm:relative sm:top-0 relative top-[390px]">
       <div className="space-y-4">
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
         <div className="flex items-center  justify-between sm:w-[173%] w-[102%] sm:pt-10">
