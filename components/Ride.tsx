@@ -32,7 +32,7 @@ function SimpleMap({
 
   const directionsRendererOptions = {
     polylineOptions: {
-      strokeColor: "#FF0000",
+      strokeColor: "#006098",
       strokeOpacity: 0.8,
       strokeWeight: 5,
     },
