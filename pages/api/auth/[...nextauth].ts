@@ -47,7 +47,7 @@ export default NextAuth({
           return null;
         }
 
-        return { id: account.userId.toString(), email: account.email };
+        return { id: account.userId.toString(), email: account.email};
       },
     }),
 

@@ -6,6 +6,7 @@ import {
   GoogleMap,
   Marker,
   Polyline,
+  DirectionsRenderer,
 } from "@react-google-maps/api";
 import { IoMdPerson } from "react-icons/io";
 import router from "next/router";
@@ -16,31 +17,70 @@ interface MapProps {
   lng: number;
 }
 
+interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
 const Map: React.FC<MapProps> = ({ text }) => <div>{text}</div>;
 
-function SimpleMap() {
-  const defaultProps = {
-    center: {
-      lat: 25.06,
-      lng: -77.345,
-    },
-    zoom: 13,
-  };
+function SimpleMap({ pickupCoordinates, dropoffCoordinates }: { pickupCoordinates: Coordinates | null, dropoffCoordinates: Coordinates | null }) {
   const mapOptions = {
     fullscreenControl: false,
+    mapTypeControl: false,
   };
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.API_KEY || ""
+});
+
+const [directionsResult, setDirectionsResult] = useState<any | null>(null);
+
+const directionsRendererOptions = {
+  polylineOptions: {
+    strokeColor: '#FF0000', 
+    strokeOpacity: 0.8,
+    strokeWeight: 5,
+  },
+};
+
+useEffect(() => {
+  if (pickupCoordinates && dropoffCoordinates) {
+    const directionsService = new window.google.maps.DirectionsService();
+    
+    directionsService.route({
+      origin: pickupCoordinates,
+      destination: dropoffCoordinates,
+      travelMode: window.google.maps.TravelMode.DRIVING,
+    }, (result, status) => {
+      if (status === window.google.maps.DirectionsStatus.OK) {
+        setDirectionsResult(result);
+      } else {
+        console.error(`Error fetching directions: ${status}`);
+        setDirectionsResult(null);
+      }
+    });
+  }
+}, [pickupCoordinates, dropoffCoordinates]);
+
+
+
+if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <div className="sm:h-[78vh] sm:w-[65%]  h-[100vh] w-[100%] sm:mt-0 mt-5">
-      <GoogleMapReact
-        bootstrapURLKeys={{ key: process.env.API_KEY || "" }}
-        defaultCenter={defaultProps.center}
-        defaultZoom={defaultProps.zoom}
-        options={mapOptions}
-        yesIWantToUseGoogleMapApiInternals
+    <GoogleMap
+           mapContainerStyle={{ width: '100%', height: '100%' }}
+       center={{ lat: 25.06, lng: -77.345 }}
+       zoom={13}
+       options={mapOptions}
       >
-        <Map lat={59.955413} lng={30.337844} text="My Marker" />
-      </GoogleMapReact>
+
+
+{directionsResult && (
+  <DirectionsRenderer directions={directionsResult} options={directionsRendererOptions}/>
+)}
+      </GoogleMap>
     </div>
   );
 }
@@ -50,6 +90,11 @@ const Ride = () => {
   const [passengers, setPassengers] = useState(1);
   const [fare, setFare] = useState("10.00");
   const [pickupClicked, setPickupClicked] = useState(false);
+
+  const [pickupCoordinates, setPickupCoordinates] = useState<Coordinates | null>(null);
+  const [dropoffCoordinates, setDropoffCoordinates] = useState<Coordinates | null>(null);
+
+  
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.API_KEY || "",
@@ -63,7 +108,6 @@ const Ride = () => {
 
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const dropoffInputRef = useRef<HTMLInputElement>(null);
-  const [isPageLoaded, setIsPageLoaded] = useState(false);
 
   const calculateFare = (distance: number, passengers: number): string => {
     const baseFare = 10;
@@ -163,10 +207,22 @@ const Ride = () => {
 
     pickupAutocomplete.addListener("place_changed", () => {
       const place = pickupAutocomplete.getPlace();
+      if (place.geometry && place.geometry.location) {
+        setPickupCoordinates({
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        });
+      }
     });
 
     dropoffAutocomplete.addListener("place_changed", () => {
       const place = dropoffAutocomplete.getPlace();
+      if (place.geometry && place.geometry.location) {
+        setDropoffCoordinates({
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        });
+      }
     });
 
     return () => {
@@ -259,7 +315,10 @@ const Ride = () => {
           </div>
         </div>
       </div>
-      <SimpleMap />
+      <SimpleMap 
+      pickupCoordinates={pickupCoordinates} 
+      dropoffCoordinates={dropoffCoordinates} 
+      />
     </div>
   );
 };

@@ -26,7 +26,7 @@ const Checkout = () => {
           </button>
         </div>
       </div>
-      <div className="border rounded-md sm:w-[450px] w-[370px] sm:h-[20vh] h-[25vh] px-2 mt-5 pt-5 space-y-2">
+      <div className="border rounded-md sm:w-[450px] w-[370px] sm:h-[23vh] h-[28vh] px-2 mt-5 pt-5 space-y-2">
       <p className="font-bold">Pickup Location: <span className="font-normal">{pickup}</span></p>
       <p className="font-bold">Dropoff Location: <span className="font-normal">{dropoff}</span></p>
       <p className="font-bold">Fare: $<span className="font-normal">{fare}</span></p>
