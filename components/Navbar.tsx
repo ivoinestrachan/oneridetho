@@ -50,7 +50,7 @@ const Navbar = () => {
                   className="rounded-full"
                 />
               </div>
-              <div>{session.user?.email}</div>
+              <div>{session.user?.name}</div>
             </div>
           )}
         </div>

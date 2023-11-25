@@ -12,42 +12,19 @@ function mapGender(genderString: string) {
     case 'female':
       return 'Female';
     default:
-      return 'Other';
+      return 'Male';
   }
 }
 
 
+const crypto = require('crypto');
+
+function generateUniqueSessionToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
 export default NextAuth({
   providers: [
-    CredentialsProvider({
-      name: "DriverCredentials",
-      credentials: {
-        email: { label: "Email", type: "text" },
-        password: { type: "password" },
-      },
-      authorize: async (credentials) => {
-        if (!credentials) return null;
 
-        const account = await prisma.account.findUnique({
-          where: { email: credentials.email },
-        });
-
-        if (!account) {
-          return null;
-        }
-
-        const passwordMatch = await bcrypt.compare(
-          credentials.password,
-          account.password
-        );
-
-        if (!passwordMatch) {
-          return null;
-        }
-
-        return { id: account.userId.toString(), email: account.email};
-      },
-    }),
 
     CredentialsProvider({
       name: "Credentials",
@@ -104,10 +81,12 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        const sessionToken = generateUniqueSessionToken(); 
+    
         await prisma.session.create({
           data: {
             userId: parseInt(user.id),
-            sessionToken: token.jti as string,
+            sessionToken: sessionToken,
             expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 
           },
         });
