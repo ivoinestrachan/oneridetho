@@ -63,21 +63,22 @@ function SimpleMap({
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
-    <div className="sm:h-[78vh] sm:w-[65%]  h-[100vh] w-[100%] sm:mt-0 mt-5">
-      <GoogleMap
-        mapContainerStyle={{ width: "100%", height: "100%" }}
-        center={{ lat: 25.06, lng: -77.345 }}
-        zoom={13}
-        options={mapOptions}
-      >
-        {directionsResult && (
-          <DirectionsRenderer
-            directions={directionsResult}
-            options={directionsRendererOptions}
-          />
-        )}
-      </GoogleMap>
-    </div>
+    <div className="sm:h-[78vh] sm:w-[65%] h-full w-full sm:relative fixed top-0 left-0 sm:z-[1] z-[-1]">
+    <GoogleMap
+      mapContainerStyle={{ width: '100%', height: '100%' }}
+      center={{ lat: 25.06, lng: -77.345 }}
+      zoom={13}
+      options={mapOptions}
+    >
+      {directionsResult && (
+        <DirectionsRenderer
+          directions={directionsResult}
+          options={directionsRendererOptions}
+        />
+      )}
+    </GoogleMap>
+  </div>
+  
   );
 }
 
@@ -245,7 +246,7 @@ const Ride = () => {
   }, []);
 
   return (
-    <div className="mt-5 sm:flex justify-between">
+    <div className="mt-5 sm:flex justify-between sm:bg-none bg-white sm:py-0 py-5 sm:pl-0 sm:pr-0 pl-3 pr-3 rounded-md sm:relative sm:top-0 relative top-[420px]">
       <div className="space-y-4">
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
         <div className="flex items-center  justify-between sm:w-[173%] w-[102%] sm:pt-10">
