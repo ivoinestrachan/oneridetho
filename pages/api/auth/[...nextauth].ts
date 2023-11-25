@@ -12,11 +12,9 @@ function mapGender(genderString: string) {
     case 'female':
       return 'Female';
     default:
-      return 'Male';
+      return 'Other';
   }
 }
-
-
 
 
 export default NextAuth({
@@ -101,5 +99,42 @@ export default NextAuth({
       },
     }),
   ],
+
   secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        await prisma.session.create({
+          data: {
+            userId: parseInt(user.id),
+            sessionToken: token.jti as string,
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 
+          },
+        });
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (token.sub) {
+        const user = await prisma.user.findUnique({
+          where: { id: parseInt(token.sub) },
+        });
+    
+        if (user) {
+          session.user = {
+            ...session.user,
+            id: user.id.toString(),
+            name: user.name,
+            dob: user.dob,
+            gender: user.gender,
+            phone: user.phone,
+          } as any; 
+        }
+      }
+    
+      return session;
+    },
+  },
 });
+
