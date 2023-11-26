@@ -1,5 +1,7 @@
 import { useRouter } from "next/router";
 import { IoMdPerson } from "react-icons/io";
+import axios from "axios";
+
 
 const Checkout = () => {
   const router = useRouter();
@@ -9,6 +11,27 @@ const Checkout = () => {
   const handleEdit = () => {
     router.push("/book?editing=true");
   };
+
+  const handleCheckout = async () => {
+    try {
+      const bookingData = {
+        pickupLocation: pickup,
+        dropoffLocation: dropoff,
+        fare: fare,
+        passengerCount: passengers,
+        paymentMethod: 'Cash', 
+      };
+
+  
+      await axios.post('/api/bookings', bookingData);
+
+      router.push('/confirmation');
+    } catch (error) {
+      console.error('Error during booking:', error);
+  
+    }
+  };
+
 
   return (
     <div className="px-2 mt-5">
@@ -42,7 +65,9 @@ const Checkout = () => {
           </button>
         </div>
         <div>
-          <button className="py-3 bg-black text-white pl-12 pr-12 rounded-md mt-5">
+          <button className="py-3 bg-black text-white pl-12 pr-12 rounded-md mt-5"
+          onClick={handleCheckout}
+          >
             Checkout
           </button>
         </div>

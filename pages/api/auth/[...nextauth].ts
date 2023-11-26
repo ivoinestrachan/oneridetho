@@ -81,7 +81,7 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        const sessionToken = generateUniqueSessionToken(); 
+        const sessionToken = generateUniqueSessionToken();
     
         await prisma.session.create({
           data: {
