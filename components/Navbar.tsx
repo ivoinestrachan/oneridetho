@@ -38,6 +38,12 @@ const Navbar = () => {
                   Sign Up
                 </button>
               </Link>
+
+              <Link href="/auth/login">
+                <button className="font-sans font-bold">
+                  Login
+                </button>
+              </Link>
             </>
           ) : (
             <div className="flex items-center gap-3">
