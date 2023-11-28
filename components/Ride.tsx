@@ -178,12 +178,15 @@ const Ride = () => {
   };
 
   useEffect(() => {
-    if (!isLoaded) return;
-
+    if (!isLoaded || !window.google || !window.google.maps || !window.google.maps.places) {
+      console.error("Google Maps JavaScript API not loaded");
+      return;
+    }
+  
     if (!pickupInputRef.current || !dropoffInputRef.current) {
       return;
     }
-
+  
     const pickupAutocomplete = new window.google.maps.places.Autocomplete(
       pickupInputRef.current,
       {
