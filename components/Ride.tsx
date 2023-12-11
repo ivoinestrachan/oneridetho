@@ -29,6 +29,7 @@ function SimpleMap({
   });
 
   const [directionsResult, setDirectionsResult] = useState<any | null>(null);
+  
 
   const directionsRendererOptions = {
     polylineOptions: {
@@ -85,8 +86,12 @@ function SimpleMap({
 const Ride = () => {
   const [distance, setDistance] = useState<string | null>(null);
   const [passengers, setPassengers] = useState(1);
-  const [fare, setFare] = useState("10.00");
+  const [fare, setFare] = useState("");
   const [pickupClicked, setPickupClicked] = useState(false);
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
+  const [bookingTime, setBookingTime] = useState('');
+  const bookingTimes = ["Book Now", "10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM"];
+
 
   const [pickupCoordinates, setPickupCoordinates] =
     useState<Coordinates | null>(null);
@@ -248,11 +253,41 @@ const Ride = () => {
     }
   }, []);
 
+
+  
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const currentLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setUserLocation(currentLocation);
+          setPickupCoordinates(currentLocation);
+          if (pickupInputRef.current) {
+            pickupInputRef.current.value = `${currentLocation.lat}`;
+          }
+        },
+        (error) => {
+          console.error('Error getting location:', error.message);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  };
+
+  useEffect(() => {
+    getUserLocation();
+  }, []);
+
   return (
     <div className="mt-5 sm:flex justify-between sm:bg-none bg-white sm:py-0 py-4 sm:pl-0 sm:pr-0 pl-3 pr-3 rounded-md sm:relative sm:top-0 relative top-[390px]">
       <div className="space-y-4">
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
-        <div className="flex items-center  justify-between sm:w-[173%] w-[102%] sm:pt-10">
+        <button onClick={getUserLocation}>Use Current Location</button>
+        <div className="flex items-center  justify-between sm:w-[173%] w-[103%] sm:pt-10">
           <div>
             <input
               ref={pickupInputRef}
@@ -299,18 +334,22 @@ const Ride = () => {
               className="py-2 bg-black text-white pl-4 pr-4 rounded-md"
               onClick={handlePickupClick}
             >
-              Pickup Now
+              See Prices
             </button>
           </div>
 
           <div>
             {pickupClicked && (
-              <button
-                className="py-2 bg-black text-white pl-4 pr-4 rounded-md"
-                onClick={handleBooking}
-              >
-                Book
-              </button>
+              <select
+              value={bookingTime}
+              onClick={handleBooking}
+              onChange={(e) => setBookingTime(e.target.value)}
+              className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md"
+            >
+              {bookingTimes.map((time, index) => (
+                <option key={index} value={time}>{time}</option>
+              ))}
+            </select>
             )}
           </div>
         </div>

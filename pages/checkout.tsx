@@ -21,22 +21,23 @@ const Checkout = () => {
         passengerCount: passengers,
         paymentMethod: 'Cash', 
       };
-
   
-      await axios.post('/api/bookings', bookingData);
-
-      router.push('/confirmation');
+      const response = await axios.post('/api/bookings', bookingData);
+      const { rideId } = response.data;
+  
+      router.push(`rides/[rideId]?rideId=${rideId}`);
     } catch (error) {
       console.error('Error during booking:', error);
-  
     }
   };
+  
 
 
   return (
     <div className="px-2 mt-5">
       <h1 className="font-bold text-[32px]">Checkout</h1>
       <div className="flex items-center gap-3">
+        {/*
         <div>
           <button className="py-3 bg-black text-white pl-4 pr-4 rounded-md mt-5">
             Pay with Cash
@@ -48,6 +49,7 @@ const Checkout = () => {
             Pay with Card
           </button>
         </div>
+  */}
       </div>
       <div className="border rounded-md sm:w-[450px] w-[370px] sm:h-[23vh] h-[28vh] px-2 mt-5 pt-5 space-y-2">
       <p className="font-bold">Pickup Location: <span className="font-normal">{pickup}</span></p>
@@ -68,7 +70,7 @@ const Checkout = () => {
           <button className="py-3 bg-black text-white pl-12 pr-12 rounded-md mt-5"
           onClick={handleCheckout}
           >
-            Checkout
+            Comfirm Ride
           </button>
         </div>
       </div>

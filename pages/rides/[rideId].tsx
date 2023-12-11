@@ -48,6 +48,17 @@ const RideDetails = () => {
     }
   }, [rideId]);
 
+  const cancelRide = async () => {
+    try {
+      const response = await axios.post(`/api/rides/cancel/${rideId}`);
+      alert("Ride has been canceled");
+      router.push('/'); 
+    } catch (error) {
+      console.error("Error cancelling ride:", error);
+      setError("Failed to cancel ride.");
+    }
+  };
+
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
@@ -80,7 +91,7 @@ const RideDetails = () => {
                   width={225}
                   height={225}
                 />
-                <div className="ml-[50px]">
+                <div className="ml-[30px]">
                   <p className="text-gray-500 text-[18px]">
                     {ride.driver.name}
                   </p>
@@ -92,12 +103,20 @@ const RideDetails = () => {
                   </p>
                 </div>
               </div>
-              <a href={`tel:${ride.driver.phone}`}>
-                <div>Contact:</div>
-                <p className="underline text-blue-400 text-[18px]">
-                  {ride.driver.phone}
-                </p>
-              </a>
+              <div className="flex items-center justify-between w-[98%]">
+                <a href={`tel:4155550132`}>
+                  <div>Customer Service</div>
+                  <p className="underline text-blue-400 text-[18px]">
+                  4155550132
+                  </p>
+                </a>
+
+                <div>
+                  <button className="bg-red-500 py-3 pl-2 pr-2 rounded-md text-white"
+                   onClick={cancelRide}
+                  >Cancel Ride</button>
+                </div>
+              </div>
             </div>
           )}
         </div>
