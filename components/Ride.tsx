@@ -255,7 +255,7 @@ const Ride = () => {
           setUserLocation(currentLocation);
           setPickupCoordinates(currentLocation);
           if (pickupInputRef.current) {
-            pickupInputRef.current.value = `${currentLocation.lat}`;
+            pickupInputRef.current.value = `${currentLocation.lat}, ${currentLocation.lng}`;
           }
         },
         (error) => {
