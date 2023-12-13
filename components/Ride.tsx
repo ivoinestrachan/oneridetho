@@ -24,8 +24,9 @@ function SimpleMap({
     mapTypeControl: false,
   };
 
-  const { isLoaded } = useLoadScript({
+  const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.API_KEY || "",
+    libraries: ["places"],
   });
 
   const [directionsResult, setDirectionsResult] = useState<any | null>(null);
@@ -183,32 +184,20 @@ const Ride = () => {
   };
 
   useEffect(() => {
-    if (!isLoaded || !window.google || !window.google.maps || !window.google.maps.places) {
-      console.error("Google Maps JavaScript API not loaded");
+    if (!isLoaded || !pickupInputRef.current || !dropoffInputRef.current) {
+      console.error("Google Maps JavaScript API not loaded or error occurred");
       return;
     }
-  
-    if (!pickupInputRef.current || !dropoffInputRef.current) {
-      return;
-    }
-  
-    const pickupAutocomplete = new window.google.maps.places.Autocomplete(
-      pickupInputRef.current,
-      {
-        //  types: ["geocode"],
-        strictBounds: true,
-        componentRestrictions: { country: "BS" },
-      }
-    );
 
-    const dropoffAutocomplete = new window.google.maps.places.Autocomplete(
-      dropoffInputRef.current,
-      {
-        //types: ["geocode"],
-        strictBounds: true,
-        componentRestrictions: { country: "BS" },
-      }
-    );
+    const pickupAutocomplete = new window.google.maps.places.Autocomplete(pickupInputRef.current, {
+      strictBounds: true,
+      componentRestrictions: { country: "BS" },
+    });
+
+    const dropoffAutocomplete = new window.google.maps.places.Autocomplete(dropoffInputRef.current, {
+      strictBounds: true,
+      componentRestrictions: { country: "BS" },
+    });
 
     pickupAutocomplete.addListener("place_changed", () => {
       const place = pickupAutocomplete.getPlace();
