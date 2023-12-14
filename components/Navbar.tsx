@@ -25,7 +25,6 @@ const Navbar = () => {
                 <li>Book Now</li>
               </Link>
               <li>Drive</li>
-              <li>About Us</li>
             </ul>
           </div>
         </div>
