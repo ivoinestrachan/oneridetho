@@ -84,7 +84,7 @@ model Ride {
   isConfirmed     Boolean
   paymentMethod   String
   bookings        Booking[]
-  driver          Driver?     @relation("DriverRides", fields: [driverId], references: [id])
+  driver          Driver?    @relation("DriverRides", fields: [driverId], references: [id])
   user            User       @relation("UserRides", fields: [userId], references: [id])
 }
 
