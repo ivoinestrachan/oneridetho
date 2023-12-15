@@ -9,14 +9,15 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
+    /*
     const session = await getSession({ req });
-    //@ts-ignore
+
     if (!session || !session.user || !session.user.id) {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
-    //@ts-ignore
-    const userId = parseInt(session.user.id);
+    */
+    const userId = 24 /*parseInt(session.user.id)*/;
 
     try {
       const {
@@ -42,7 +43,7 @@ export default async function handler(
           fare: parseFloat(fare),
           tip: 5,
           userId: userId,
-          driverId: 1,
+          driverId: null,
           status: "Requested",
           pickupLocation: pickupLocation,
           dropoffLocation: dropoffLocation,
@@ -57,7 +58,7 @@ export default async function handler(
         data: {
           rideId: ride.id,
           userId: userId,
-          driverId: 1,
+          driverId: null,
           createdAt: new Date(),
           isAccepted: false,
         },
