@@ -43,7 +43,7 @@ export default async function handler(
           fare: parseFloat(fare),
           tip: 5,
           userId: userId,
-          driverId: null,
+          driverId: null as number | null,
           status: "Requested",
           pickupLocation: pickupLocation,
           dropoffLocation: dropoffLocation,
@@ -58,7 +58,7 @@ export default async function handler(
         data: {
           rideId: ride.id,
           userId: userId,
-          driverId: null,
+          driverId: null as number | null,
           createdAt: new Date(),
           isAccepted: false,
         },
