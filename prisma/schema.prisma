@@ -64,7 +64,9 @@ model Driver {
   password     String
   phone        String?   @unique
   carImageUrl  String?
+  locationId   Int?      @unique
   bookings     Booking[]
+  Location     Location? @relation(fields: [locationId], references: [id])
   rides        Ride[]    @relation("DriverRides")
 }
 
@@ -89,9 +91,10 @@ model Ride {
 }
 
 model Location {
-  id   Int   @id @default(autoincrement())
-  lat  Float
-  long Float
+  id     Int     @id @default(autoincrement())
+  lat    Float
+  long   Float
+  Driver Driver?
 }
 
 enum Gender {
