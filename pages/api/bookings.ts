@@ -49,6 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
 
+    /*
     const driverNumbers = ['12424251480']
 
     for (const number of driverNumbers) {
@@ -64,6 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     }
     
+    */
 
         
     res.status(200).json({
