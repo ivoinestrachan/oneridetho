@@ -6,7 +6,6 @@ import twilio from 'twilio';
 
 const prisma = new PrismaClient();
 
-// Initialize Twilio client
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -50,14 +49,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
 
-    const testNumber = '12424251480';
+    const driverNumbers = ['12424251480']
 
-    const message = await twilioClient.messages.create({
-
-      from: process.env.TWILIO_PHONE_NUMBER,
-      body: `Ride booked! Pickup: ${pickupLocation},\nDrop-off: ${dropoffLocation}\nPassengers: ${passengerCount}`,
-      to: testNumber
-    });
+    for (const number of driverNumbers) {
+        try {
+            const message = await twilioClient.messages.create({
+                from: process.env.TWILIO_PHONE_NUMBER,
+                body: `Ride booked!\nPickup: ${pickupLocation},\nDrop-off: ${dropoffLocation}\nPassengers: ${passengerCount}`,
+                to: number 
+            });
+            console.log(`Message sent to ${number}: ${message.sid}`);
+        } catch (error) {
+            console.error(`Failed to send message to ${number}: ${error}`);
+        }
+    }
     
 
         
