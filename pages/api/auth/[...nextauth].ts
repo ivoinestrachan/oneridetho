@@ -114,8 +114,7 @@ export const authOptions = {
           } as any; 
         }
       }
-    
-      console.log(session.user.id)
+  
       return session;
     },
   },
