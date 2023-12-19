@@ -2,9 +2,19 @@ import Image from "next/image";
 import logo from "../assets/logo.svg";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
 
 const Navbar = () => {
   const { data: session } = useSession();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
+  const handleLogout = () => {
+    signOut();
+  };
   return (
     <div className="bg-black">
       <div className="flex items-center justify-between w-[95%] h-[10vh]">
@@ -55,7 +65,17 @@ const Navbar = () => {
                   className="rounded-full"
                 />
               </div>
-              <div>{session.user?.name}</div>
+              <div onClick={handleDropdown} className="cursor-pointer">{session.user?.name}</div>
+              {dropdownOpen && (
+                <div className="absolute bg-white p-2 rounded shadow mt-[110px] ml-10 sm:w-[10%] w-[30%]">
+                  <ul>
+                  <Link href="/rides">
+                      <li className="text-black hover:bg-gray-200 w-full">Rides</li>
+                    </Link>
+                    <button onClick={handleLogout} className="text-black hover:bg-gray-200 w-full text-left">Logout</button> 
+                  </ul>
+                </div>
+                )}
             </div>
           )}
         </div>

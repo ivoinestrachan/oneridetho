@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { IoMdPerson } from "react-icons/io";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 
 const Checkout = () => {
@@ -31,7 +33,16 @@ const Checkout = () => {
     }
   };
   
+  const { data: session, status } = useSession();
 
+  useEffect(() => {
+      if (status === 'loading') return; 
+      if (!session) router.push('/auth/signup');
+  }, [session, status, router]);
+
+  if (status === 'loading') {
+      return <div>Loading...</div>;
+  }
 
   return (
     <div className="px-2 mt-5">
