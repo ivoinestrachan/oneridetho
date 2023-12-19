@@ -67,8 +67,14 @@ const Navbar = () => {
               </div>
               <div onClick={handleDropdown} className="cursor-pointer">{session.user?.name}</div>
               {dropdownOpen && (
-                <div className="absolute bg-white p-2 rounded shadow mt-[110px] ml-10 sm:w-[10%] w-[30%]">
+                <div className="absolute bg-white p-2 rounded shadow mt-[145px] ml-10 sm:w-[10%] w-[30%]">
                   <ul>
+                  <Link href="/book">
+                      <li className="text-black hover:bg-gray-200 w-full sm:hidden">Book a Ride</li>
+                    </Link>
+                    <Link href="/apply">
+                      <li className="text-black hover:bg-gray-200 w-full sm:hidden">Drive</li>
+                    </Link>
                   <Link href="/rides">
                       <li className="text-black hover:bg-gray-200 w-full">Rides</li>
                     </Link>

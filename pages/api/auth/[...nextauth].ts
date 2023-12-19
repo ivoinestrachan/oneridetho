@@ -22,7 +22,8 @@ const crypto = require('crypto');
 function generateUniqueSessionToken() {
   return crypto.randomBytes(32).toString('hex');
 }
-export default NextAuth({
+export const authOptions = {
+
   providers: [
 
 
@@ -79,6 +80,7 @@ export default NextAuth({
 
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    //@ts-ignore
     async jwt({ token, user }) {
       if (user) {
         const sessionToken = generateUniqueSessionToken();
@@ -94,6 +96,7 @@ export default NextAuth({
       return token;
     },
 
+     //@ts-ignore
     async session({ session, token }) {
       if (token.sub) {
         const user = await prisma.user.findUnique({
@@ -112,8 +115,10 @@ export default NextAuth({
         }
       }
     
+      console.log(session.user.id)
       return session;
     },
   },
-});
+};
 
+export default NextAuth(authOptions);

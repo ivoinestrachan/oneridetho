@@ -13,11 +13,6 @@ interface Coordinates {
 }
 
 
-
-
-
-
-
 const Estimate = () => {
   const [distance, setDistance] = useState<string | null>(null);
   const [passengers, setPassengers] = useState(1);

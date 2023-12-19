@@ -8,6 +8,7 @@ import { useEffect } from "react";
 const Checkout = () => {
   const router = useRouter();
   const { pickup, dropoff, fare, passengers } = router.query;
+  const { data: session, status } = useSession();
   
 
   const handleEdit = () => {
@@ -33,7 +34,6 @@ const Checkout = () => {
     }
   };
   
-  const { data: session, status } = useSession();
 
   useEffect(() => {
       if (status === 'loading') return; 
