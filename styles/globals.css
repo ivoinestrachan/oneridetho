@@ -18,3 +18,7 @@ input[type=number] {
 body{
   overflow-x: hidden;
 }
+
+.selected {
+  color: gold;
+}
