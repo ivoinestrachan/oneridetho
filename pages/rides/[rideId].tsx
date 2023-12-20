@@ -41,6 +41,45 @@ const RideDetails = () => {
     return null;
   };
 
+  const geocodeAddress = async (address:string) => {
+    try {
+      const response = await axios.post('/api/geocode', { address });
+      return response.data;
+    } catch (error) {
+      console.error('Error during geocoding:', error);
+      throw error;
+    }
+  };
+
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      if (ride && ride.status) {
+        const location = ride.status === 'InProgress' ? ride.dropoffLocation : ride.pickupLocation;
+
+        if (typeof location === 'object' && 'lat' in location && 'lng' in location) {
+          setMapLocation(location);
+        } else if (typeof location === 'string') {
+          try {
+            const coords = await geocodeAddress(location);
+            if (coords.lat && coords.lng) {
+              setMapLocation(coords);
+            } else {
+              console.error('Geocoding returned invalid data:', coords);
+            }
+          } catch (error) {
+            console.error('Geocoding error:', error);
+          }
+        } else {
+          console.error('Invalid location data:', location);
+        }
+      }
+    };
+
+    fetchLocation();
+  }, [ride]);
+
+
   useEffect(() => {
     if (ride && ride.status) {
       const location = ride.status === 'InProgress' ? ride.dropoffLocation : ride.pickupLocation;
@@ -50,14 +89,11 @@ const RideDetails = () => {
   
 
   useEffect(() => {
-    if (ride && mapRef.current) {
-      const location = ride.status === 'InProgress' ? ride.dropoffLocation : ride.pickupLocation;
-      setMapLocation(location);
-
+    if (ride && mapLocation && mapRef.current) {
       const directionsService = new google.maps.DirectionsService();
       directionsService.route({
         origin: driverLocation,
-        destination: location,
+        destination: mapLocation,
         travelMode: google.maps.TravelMode.DRIVING,
       }, (result, status) => {
         if (status === google.maps.DirectionsStatus.OK) {
@@ -68,7 +104,7 @@ const RideDetails = () => {
         }
       });
     }
-  }, [ride, mapRef]);
+  }, [ride, mapLocation]);
 
   const onMapLoad = useCallback((map: any) => {
     mapRef.current = map;
