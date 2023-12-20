@@ -110,6 +110,7 @@ export const authOptions = {
             name: user.name,
             dob: user.dob,
             gender: user.gender,
+            image: user.photoUrl,
             phone: user.phone,
           } as any; 
         }

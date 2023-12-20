@@ -2,11 +2,12 @@ import Image from "next/image";
 import logo from "../assets/logo.svg";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const Navbar = () => {
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -15,6 +16,33 @@ const Navbar = () => {
   const handleLogout = () => {
     signOut();
   };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/photo", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+      } else {
+        console.error("Failed to upload photo");
+      }
+    }
+  };
+
   return (
     <div className="bg-black">
       <div className="flex items-center justify-between w-[95%] h-[10vh]">
@@ -49,39 +77,59 @@ const Navbar = () => {
               </Link>
 
               <Link href="/auth/login">
-                <button className="font-sans font-bold">
-                  Login
-                </button>
+                <button className="font-sans font-bold">Login</button>
               </Link>
             </>
           ) : (
             <div className="flex items-center gap-3">
-              <div>
+              <div onClick={triggerFileInput} className="cursor-pointer">
                 <Image
-                  src={session.user?.image || "https://res.cloudinary.com/dxmrcocqb/image/upload/v1700749220/Social_Media_Chatting_Online_Blank_Profile_Picture_Head_And_Body_Icon_People_Standing_Icon_Grey_Background_generated_qnojdz.jpg"}
+                  src={
+                    session.user?.image ||
+                    "https://res.cloudinary.com/dxmrcocqb/image/upload/v1700749220/Social_Media_Chatting_Online_Blank_Profile_Picture_Head_And_Body_Icon_People_Standing_Icon_Grey_Background_generated_qnojdz.jpg"
+                  }
                   alt="pfp"
-                  height={40}
-                  width={40}
+                  height={50}
+                  width={50}
                   className="rounded-full"
                 />
               </div>
-              <div onClick={handleDropdown} className="cursor-pointer">{session.user?.name}</div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <div onClick={handleDropdown} className="cursor-pointer">
+                {session.user?.name}
+              </div>
               {dropdownOpen && (
                 <div className="absolute bg-white p-2 rounded shadow mt-[145px] ml-10 sm:w-[10%] w-[30%]">
                   <ul>
-                  <Link href="/book">
-                      <li className="text-black hover:bg-gray-200 w-full sm:hidden">Book a Ride</li>
+                    <Link href="/book">
+                      <li className="text-black hover:bg-gray-200 w-full sm:hidden">
+                        Book a Ride
+                      </li>
                     </Link>
                     <Link href="/apply">
-                      <li className="text-black hover:bg-gray-200 w-full sm:hidden">Drive</li>
+                      <li className="text-black hover:bg-gray-200 w-full sm:hidden">
+                        Drive
+                      </li>
                     </Link>
-                  <Link href="/rides">
-                      <li className="text-black hover:bg-gray-200 w-full">Rides</li>
+                    <Link href="/rides">
+                      <li className="text-black hover:bg-gray-200 w-full">
+                        Rides
+                      </li>
                     </Link>
-                    <button onClick={handleLogout} className="text-black hover:bg-gray-200 w-full text-left">Logout</button> 
+                    <button
+                      onClick={handleLogout}
+                      className="text-black hover:bg-gray-200 w-full text-left"
+                    >
+                      Logout
+                    </button>
                   </ul>
                 </div>
-                )}
+              )}
             </div>
           )}
         </div>
