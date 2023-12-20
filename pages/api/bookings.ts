@@ -1,14 +1,20 @@
 import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from './auth/[...nextauth]';
-import twilio from 'twilio';
+import { authOptions } from "./auth/[...nextauth]";
+import twilio from "twilio";
 
 const prisma = new PrismaClient();
 
-const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
@@ -19,7 +25,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const userId = parseInt(session.user.id);
 
   try {
-    const { pickupLocation, dropoffLocation, fare, passengerCount, paymentMethod, phoneNumbers } = req.body;
+    const {
+      pickupLocation,
+      dropoffLocation,
+      fare,
+      passengerCount,
+      paymentMethod,
+      phoneNumbers,
+    } = req.body;
 
     const ride = await prisma.ride.create({
       data: {
@@ -50,24 +63,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     /*
-    const driverNumbers = ['12424251480']
+    const driverNumbers = ["12424251480"];
+    const messageBody = `Ride booked!
+Pickup: ${pickupLocation},
+Drop-off: ${dropoffLocation}
+Passengers: ${passengerCount}
+View details: https://driver-oneridetho.vercel.app/dashboard?rideId=${ride.id}`;
 
     for (const number of driverNumbers) {
-        try {
-            const message = await twilioClient.messages.create({
-                from: process.env.TWILIO_PHONE_NUMBER,
-                body: `Ride booked!\nPickup: ${pickupLocation},\nDrop-off: ${dropoffLocation}\nPassengers: ${passengerCount}`,
-                to: number 
-            });
-            console.log(`Message sent to ${number}: ${message.sid}`);
-        } catch (error) {
-            console.error(`Failed to send message to ${number}: ${error}`);
-        }
+      try {
+        const message = await twilioClient.messages.create({
+          from: process.env.TWILIO_PHONE_NUMBER,
+          body: messageBody,
+          to: number,
+        });
+        console.log(`Message sent to ${number}: ${message.sid}`);
+      } catch (error) {
+        console.error(`Failed to send message to ${number}: ${error}`);
+      }
     }
-    
     */
 
-        
     res.status(200).json({
       message: "Ride booked successfully!",
       bookingId: booking.id,
