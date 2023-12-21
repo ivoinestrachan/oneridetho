@@ -65,8 +65,8 @@ export default async function handler(
         isAccepted: false,
       },
     });
-
-    const driverNumbers = ["12424251480", "+2428108059"];
+/*
+    const driverNumbers = ["12424251480", "12428108059"];
     const messageBody = `Ride booked!
 Pickup: ${pickupLocation},
 Drop-off: ${dropoffLocation}
@@ -85,6 +85,8 @@ View details: https://driver-oneridetho.vercel.app/dashboard?rideId=${ride.id}`;
         console.error(`Failed to send message to ${number}: ${error}`);
       }
     }
+
+    */
 
     res.status(200).json({
       message: "Ride booked successfully!",
