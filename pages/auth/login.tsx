@@ -36,6 +36,7 @@ export default function Login() {
             placeholder="email"
             type="email"
             value={email}
+            autoComplete='off'
             onChange={(e) => setEmail(e.target.value)}
             className="border outline-none py-3 pl-3 w-[300px] border-gray-200 rounded-md "
           />
