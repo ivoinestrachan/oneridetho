@@ -66,7 +66,7 @@ export default async function handler(
       },
     });
 
-    const driverNumbers = ["12424251480"];
+    const driverNumbers = ["12424251480", "+2428108059"];
     const messageBody = `Ride booked!
 Pickup: ${pickupLocation},
 Drop-off: ${dropoffLocation}
