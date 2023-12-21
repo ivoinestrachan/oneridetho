@@ -2,13 +2,16 @@ import { useRouter } from "next/router";
 import { IoMdPerson } from "react-icons/io";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 
 const Checkout = () => {
   const router = useRouter();
   const { pickup, dropoff, fare, passengers } = router.query;
   const { data: session, status } = useSession();
+  const [showProfilePhotoMessage, setShowProfilePhotoMessage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   
 
   const handleEdit = () => {
@@ -33,16 +36,42 @@ const Checkout = () => {
       console.error('Error during booking:', error);
     }
   };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/photo", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+      } else {
+        console.error("Failed to upload photo");
+      }
+    }
+  };
   
 
   useEffect(() => {
-      if (status === 'loading') return; 
-      if (!session) router.push('/auth/signup');
+    if (status === 'loading') return; 
+    if (!session) {
+      router.push('/auth/signup');
+    } else if (!session.user.image) {
+      setShowProfilePhotoMessage(true); 
+    }
   }, [session, status, router]);
-
+  
   if (status === 'loading') {
       return <div>Loading...</div>;
   }
+
+  
 
   return (
     <div className="px-2 mt-5">
@@ -85,8 +114,21 @@ const Checkout = () => {
           </button>
         </div>
       </div>
+      {showProfilePhotoMessage && (
+        <div className="mt-5 p-4 bg-red-100 border border-red-400 text-red-700 sm:w-[50%]">
+          <p>Please upload a valid  photo to proceed.</p>
+          <input type="file" 
+           className="mt-2"
+           onChange={handleFileChange}
+           ref={fileInputRef}
+           />
+        </div>
+      )}
+
     </div>
   );
 };
+
+
 
 export default Checkout;

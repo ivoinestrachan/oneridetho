@@ -1,12 +1,13 @@
 import Image from "next/image";
 import logo from "../assets/logo.svg";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, getSession } from "next-auth/react";
 import { useRef, useState } from "react";
 
 const Navbar = () => {
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState(session?.user?.image);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDropdown = () => {
@@ -23,9 +24,7 @@ const Navbar = () => {
     }
   };
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const formData = new FormData();
@@ -37,11 +36,20 @@ const Navbar = () => {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        setProfileImage(data.imageUrl); 
+
+
+        const updatedSession = await getSession();
+        if (updatedSession) {
+          updatedSession.user.image = data.imageUrl;
+        }
       } else {
         console.error("Failed to upload photo");
       }
     }
   };
+
 
   return (
     <div className="bg-black">
@@ -91,7 +99,7 @@ const Navbar = () => {
                   alt="pfp"
                   height={50}
                   width={50}
-                  className="rounded-full"
+                  className="rounded-full object-cover"
                 />
               </div>
               <input
