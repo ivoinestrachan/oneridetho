@@ -81,7 +81,7 @@ const Checkout = () => {
           <button className="py-3 bg-black text-white pl-12 pr-12 rounded-md mt-5"
           onClick={handleCheckout}
           >
-            Comfirm Ride
+            Confirm Ride
           </button>
         </div>
       </div>
