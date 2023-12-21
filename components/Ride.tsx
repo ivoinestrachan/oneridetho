@@ -26,7 +26,7 @@ function SimpleMap({
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.API_KEY || "",
-    libraries: ["places"],
+    libraries: ["places", "geocoding"],
   });
 
   const [directionsResult, setDirectionsResult] = useState<any | null>(null);
@@ -241,19 +241,41 @@ const Ride = () => {
   }, []);
 
 
-  
+  const reverseGeocode = (coordinates: Coordinates): Promise<string> => {
+    const geocoder = new window.google.maps.Geocoder();
+    return new Promise((resolve, reject) => {
+      geocoder.geocode({ location: coordinates }, (results, status) => {
+        if (status === 'OK') {
+          if (results && results[0]) {
+            resolve(results[0].formatted_address);
+          } else {
+            reject(new Error('No results found'));
+          }
+        } else {
+          reject(new Error('Geocoder failed due to: ' + status));
+        }
+      });
+    });
+  };
+
+
   const getUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const currentLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
           setUserLocation(currentLocation);
           setPickupCoordinates(currentLocation);
-          if (pickupInputRef.current) {
-            pickupInputRef.current.value = `${currentLocation.lat}, ${currentLocation.lng}`;
+          try {
+            const address = await reverseGeocode(currentLocation);
+            if (pickupInputRef.current) {
+              pickupInputRef.current.value = address;
+            }
+          } catch (error) {
+            console.error('Error getting address:', error);
           }
         },
         (error) => {
