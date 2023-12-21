@@ -22,3 +22,31 @@ body{
 .selected {
   color: gold;
 }
+
+.hero {
+  background-image: url('https://res.cloudinary.com/dxmrcocqb/image/upload/v1703125818/male-driver-of-a-carpool-service_cpulvj.jpg');
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+}
+
+.section {
+  position: relative;
+  background-image: url('https://res.cloudinary.com/dxmrcocqb/image/upload/v1703127214/Uber_home_page_dcum6a.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 40vh; 
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.2); 
+  z-index: 1;
+  height: 40vh;
+}
