@@ -9,6 +9,8 @@ type ContactProps = {
   };
   
   const Contact: React.FC<ContactProps> = ({ setEmail, setPassword, setPhoneNumber }) => {
+
+    
   return (
     <div className="flex justify-center space-y-4 mt-10">
       <div className="space-y-5 ">
@@ -27,7 +29,7 @@ type ContactProps = {
         <div className="mt-2 text-center">
           <input
             placeholder="Phone number"
-            type="tel"
+            type="number"
             onChange={(e) => setPhoneNumber(e.target.value)}
             className="border outline-none py-3 pl-3 w-[300px] border-gray-200 rounded-md "
           />
@@ -53,6 +55,12 @@ type BasicInfoProps = {
 };
 
 const BasicInfo: React.FC<BasicInfoProps> = ({ setName, setDob, setGender }) => {
+  const handleNameInput = (e: React.FormEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
+    input.value = input.value.replace(/[^A-Za-z\s]/g, ''); 
+    setName(input.value);
+  };
+
 
   return (
     <div className="flex justify-center space-y-4 mt-10">
@@ -63,11 +71,12 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setName, setDob, setGender }) => 
         <div className="mt-2 text-center">
           <input
             placeholder="Full Name"
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleNameInput}
+            required
             className="border outline-none py-3 pl-3 w-[300px] border-gray-200 rounded-md "
           />
         </div>
-        <div className="mt-2 ">
+        <div className="mt-2">
           <div>
             <label className="font-semibold">Birthday</label>
           </div>
@@ -109,34 +118,49 @@ const Signup = () => {
   
   
     const nextStep = async () => {
-        if (step === 2) {
-            try {
-                const result = await signIn('credentials', {
-                    redirect: false,
-                    email,
-                    password,
-                    name,
-                    dob,  
-                    gender ,
-                    phoneNumber
-                });
-
-                if (result && result.error) {
-                    setErrorMessage(result.error);
-                } else {
-                    router.push('/');
-                }
-            } catch (error) {
-                if (error instanceof Error) {
-                    setErrorMessage(error.message);
-                } else {
-                    setErrorMessage('An unexpected error occurred.');
-                }
-            }
-        } else {
-          setStep(step + 1);
+      if (step === 2) {
+  
+        const dobDate = new Date(dob);
+        const currentDate = new Date();
+        let age = currentDate.getFullYear() - dobDate.getFullYear();
+        const m = currentDate.getMonth() - dobDate.getMonth();
+        if (m < 0 || (m === 0 && currentDate.getDate() < dobDate.getDate())) {
+          age--;
         }
-      };
+    
+        if (age < 18) {
+          setErrorMessage("You must be 18 years or older to sign up.");
+          return;
+        }
+
+        try {
+          const result = await signIn('credentials', {
+            redirect: false,
+            email,
+            password,
+            name,
+            dob,
+            gender,
+            phoneNumber,
+          });
+    
+          if (result && result.error) {
+            setErrorMessage(result.error);
+          } else {
+            router.push('/'); 
+          }
+        } catch (error) {
+          if (error instanceof Error) {
+            setErrorMessage(error.message);
+          } else {
+            setErrorMessage('An unexpected error occurred.');
+          }
+        }
+      } else {
+        setStep(step + 1);
+      }
+    };
+    
       
   
     return (

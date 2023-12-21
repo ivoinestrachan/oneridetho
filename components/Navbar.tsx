@@ -104,7 +104,7 @@ const Navbar = () => {
                 {session.user?.name}
               </div>
               {dropdownOpen && (
-                <div className="absolute bg-white p-2 rounded shadow mt-[145px] ml-10 sm:w-[10%] w-[30%]">
+                <div className="absolute bg-white p-2 rounded shadow mt-[145px]  sm:w-[10%] w-[25%]">
                   <ul>
                     <Link href="/book">
                       <li className="text-black hover:bg-gray-200 w-full sm:hidden">
