@@ -24,6 +24,10 @@ export default async function handler(
 
   const userId = parseInt(session.user.id);
 
+  if (!session.user || !session.user.image) {
+    res.status(400).json({ message: "You must have a profile photo to book a ride." });
+    return;
+  }
   try {
     const {
       pickupLocation,
