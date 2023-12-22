@@ -6,6 +6,7 @@ import {
 } from "@react-google-maps/api";
 import { IoMdPerson } from "react-icons/io";
 import router from "next/router";
+import { useSession } from "next-auth/react";
 
 interface Coordinates {
   lat: number;
@@ -88,6 +89,13 @@ const Ride = () => {
   const [fare, setFare] = useState("");
   const [pickupClicked, setPickupClicked] = useState(false);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
+  const [scheduledPickupTime, setScheduledPickupTime] = useState("");
+  const [showScheduleInput, setShowScheduleInput] = useState(false);
+
+  const handleScheduleClick = () => {
+    setShowScheduleInput(true);
+  };
+  
 
   const [pickupCoordinates, setPickupCoordinates] =
     useState<Coordinates | null>(null);
@@ -172,6 +180,44 @@ const Ride = () => {
           passengers: passengers,
         },
       });
+    }
+  };
+
+  const { data: session } = useSession();
+
+  const handleScheduleForLater = async () => {
+    if (!pickupCoordinates || !dropoffCoordinates || !scheduledPickupTime) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    const rideDetails = {
+      userId: session?.user.id,
+      pickupLocation: pickupInputRef.current?.value,
+      dropoffLocation: dropoffInputRef.current?.value,
+      scheduledPickupTime,
+      fare: fare,
+      passengerCount: passengers,
+      paymentMethod: "Cash",
+    };
+
+    try {
+      const response = await fetch("/api/schedule", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(rideDetails),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Scheduled ride successfully:", data);
+      } else {
+        console.error("Failed to schedule ride:", await response.text());
+      }
+    } catch (error) {
+      console.error("Error during scheduling:", error);
     }
   };
 
@@ -345,12 +391,28 @@ const Ride = () => {
                 Book Now
               </button>
             </div>
-
-            <button className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md">
+            <button
+              className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md"
+              onClick={handleScheduleClick}
+            >
               Schedule for Later
             </button>
           </div>
         )}
+        {showScheduleInput && (
+  <div>
+    <input
+      type="datetime-local"
+      value={scheduledPickupTime}
+      onChange={(e) => setScheduledPickupTime(e.target.value)}
+      className="outline-none bg-gray-200 py-3 pl-2 rounded-md"
+    />
+    <button onClick={handleScheduleForLater} className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md ml-2 mt-2">
+      Confirm
+    </button>
+  </div>
+)}
+
       </div>
       <SimpleMap
         pickupCoordinates={pickupCoordinates}

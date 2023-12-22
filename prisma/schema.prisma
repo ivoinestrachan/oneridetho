@@ -77,6 +77,8 @@ model Ride {
   dropoffTime     DateTime?
   fare            Float
   tip             Float?     @default(5)
+  scheduledPickupTime DateTime?  
+  isScheduled         Boolean @default(false) 
   userId          Int
   driverId        Int?
   status          RideStatus
@@ -110,4 +112,5 @@ enum RideStatus {
   InProgress
   Completed
   Cancelled
+  Scheduled 
 }
