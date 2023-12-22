@@ -30,7 +30,6 @@ function SimpleMap({
   });
 
   const [directionsResult, setDirectionsResult] = useState<any | null>(null);
-  
 
   const directionsRendererOptions = {
     polylineOptions: {
@@ -66,21 +65,20 @@ function SimpleMap({
 
   return (
     <div className="sm:h-[78vh] sm:w-[65%] h-full w-full sm:relative fixed top-0 left-0 sm:z-[1] z-[-1]">
-    <GoogleMap
-      mapContainerStyle={{ width: '100%', height: '100%' }}
-      center={{ lat: 25.06, lng: -77.345 }}
-      zoom={13}
-      options={mapOptions}
-    >
-      {directionsResult && (
-        <DirectionsRenderer
-          directions={directionsResult}
-          options={directionsRendererOptions}
-        />
-      )}
-    </GoogleMap>
-  </div>
-  
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "100%" }}
+        center={{ lat: 25.06, lng: -77.345 }}
+        zoom={13}
+        options={mapOptions}
+      >
+        {directionsResult && (
+          <DirectionsRenderer
+            directions={directionsResult}
+            options={directionsRendererOptions}
+          />
+        )}
+      </GoogleMap>
+    </div>
   );
 }
 
@@ -89,8 +87,7 @@ const Ride = () => {
   const [passengers, setPassengers] = useState(1);
   const [fare, setFare] = useState("");
   const [pickupClicked, setPickupClicked] = useState(false);
-  const [userLocation, setUserLocation] = useState<Coordinates | null>(null)
-
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
 
   const [pickupCoordinates, setPickupCoordinates] =
     useState<Coordinates | null>(null);
@@ -102,11 +99,6 @@ const Ride = () => {
     libraries: ["places"],
   });
 
-  const handlePickupClick = () => {
-    handleCalculateDistance();
-    setPickupClicked(true);
-  };
-
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const dropoffInputRef = useRef<HTMLInputElement>(null);
 
@@ -116,13 +108,10 @@ const Ride = () => {
     const passengerCharge = (passengers - 1) * 2;
 
     const currentHour = new Date().getHours();
-
     const isNightFee = currentHour >= 23 || currentHour < 6;
+    const nightFee = isNightFee ? 5 : 0;
 
-    const nightgFee = isNightFee ? 5 : 0;
-
-    const totalFare = baseFare + distanceCharge + passengerCharge + nightgFee;
-
+    const totalFare = baseFare + distanceCharge + passengerCharge + nightFee;
     return totalFare.toFixed(2);
   };
 
@@ -132,27 +121,32 @@ const Ride = () => {
     }
   }, [passengers]);
 
-  const handleCalculateDistance = () => {
-    if (pickupInputRef.current && dropoffInputRef.current) {
+  const handleCalculateDistance = async () => {
+    if (pickupCoordinates && dropoffCoordinates) {
       const service = new window.google.maps.DistanceMatrixService();
       service.getDistanceMatrix(
         {
-          origins: [pickupInputRef.current.value],
-          destinations: [dropoffInputRef.current.value],
+          origins: [pickupCoordinates],
+          destinations: [dropoffCoordinates],
           travelMode: window.google.maps.TravelMode.DRIVING,
         },
         (response, status) => {
           if (status === "OK" && response) {
-            const distanceInMiles =
-              response.rows[0].elements[0].distance.value / 1609.34;
+            const distanceInMeters =
+              response.rows[0].elements[0].distance.value;
+            const distanceInMiles = distanceInMeters / 1609.34;
             setFare(calculateFare(distanceInMiles, passengers));
           } else {
-            console.error("Error was: " + status);
+            console.error("Error calculating distance: " + status);
           }
         }
       );
     }
   };
+
+  useEffect(() => {
+    handleCalculateDistance();
+  }, [pickupCoordinates, dropoffCoordinates, passengers]);
 
   const handleBooking = () => {
     const pickupLocation = pickupInputRef.current?.value;
@@ -187,15 +181,21 @@ const Ride = () => {
       return;
     }
 
-    const pickupAutocomplete = new window.google.maps.places.Autocomplete(pickupInputRef.current, {
-      strictBounds: true,
-      componentRestrictions: { country: "BS" },
-    });
+    const pickupAutocomplete = new window.google.maps.places.Autocomplete(
+      pickupInputRef.current,
+      {
+        strictBounds: true,
+        componentRestrictions: { country: "BS" },
+      }
+    );
 
-    const dropoffAutocomplete = new window.google.maps.places.Autocomplete(dropoffInputRef.current, {
-      strictBounds: true,
-      componentRestrictions: { country: "BS" },
-    });
+    const dropoffAutocomplete = new window.google.maps.places.Autocomplete(
+      dropoffInputRef.current,
+      {
+        strictBounds: true,
+        componentRestrictions: { country: "BS" },
+      }
+    );
 
     pickupAutocomplete.addListener("place_changed", () => {
       const place = pickupAutocomplete.getPlace();
@@ -240,24 +240,22 @@ const Ride = () => {
     }
   }, []);
 
-
   const reverseGeocode = (coordinates: Coordinates): Promise<string> => {
     const geocoder = new window.google.maps.Geocoder();
     return new Promise((resolve, reject) => {
       geocoder.geocode({ location: coordinates }, (results, status) => {
-        if (status === 'OK') {
+        if (status === "OK") {
           if (results && results[0]) {
             resolve(results[0].formatted_address);
           } else {
-            reject(new Error('No results found'));
+            reject(new Error("No results found"));
           }
         } else {
-          reject(new Error('Geocoder failed due to: ' + status));
+          reject(new Error("Geocoder failed due to: " + status));
         }
       });
     });
   };
-
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -275,15 +273,15 @@ const Ride = () => {
               pickupInputRef.current.value = address;
             }
           } catch (error) {
-            console.error('Error getting address:', error);
+            console.error("Error getting address:", error);
           }
         },
         (error) => {
-          console.error('Error getting location:', error.message);
+          console.error("Error getting location:", error.message);
         }
       );
     } else {
-      console.error('Geolocation is not supported by this browser.');
+      console.error("Geolocation is not supported by this browser.");
     }
   };
 
@@ -337,27 +335,22 @@ const Ride = () => {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div>
-            <button
-              className="py-2 bg-black text-white pl-4 pr-4 rounded-md"
-              onClick={handlePickupClick}
-            >
-              See Prices
-            </button>
-          </div>
-
-          <div>
-            {pickupClicked && (
+        {pickupCoordinates && dropoffCoordinates && fare && (
+          <div className="flex items-center gap-2">
+            <div>
               <button
-              onClick={handleBooking}
-              className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md"
-            >
-            Book Now
+                onClick={handleBooking}
+                className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md"
+              >
+                Book Now
+              </button>
+            </div>
+
+            <button className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md">
+              Schedule for Later
             </button>
-            )}
           </div>
-        </div>
+        )}
       </div>
       <SimpleMap
         pickupCoordinates={pickupCoordinates}
