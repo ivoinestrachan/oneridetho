@@ -5,14 +5,43 @@ import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 
 
+interface Stop {
+  lat: number;
+  lng: number;
+  address?: string; 
+}
+
 const Checkout = () => {
   const router = useRouter();
-  const { pickup, dropoff, fare, passengers } = router.query;
+  const { pickup, dropoff, fare, passengers, stops: stopsQuery } = router.query;
+ 
   const { data: session, status } = useSession();
   const [showProfilePhotoMessage, setShowProfilePhotoMessage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   
+  const [stopsWithAddress, setStopsWithAddress] = useState<Stop[]>([]);
+
+  useEffect(() => {
+    let stops: Stop[] = [];
+    try {
+      stops = stopsQuery ? JSON.parse(decodeURIComponent(stopsQuery as string)) : [];
+    } catch (error) {
+      console.error("Error parsing stops:", error);
+    }
+
+    const fetchAddresses = async () => {
+      const updatedStops = await Promise.all(stops.map(async (stop) => {
+        const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${stop.lat},${stop.lng}&key=${process.env.API_KEY}`);
+        const data = await response.json();
+        return { ...stop, address: data.results[0]?.formatted_address };
+      }));
+      setStopsWithAddress(updatedStops);
+    };
+
+    fetchAddresses();
+  }, [stopsQuery]);
+
 
   const handleEdit = () => {
     router.push("/book?editing=true");
@@ -25,6 +54,7 @@ const Checkout = () => {
         dropoffLocation: dropoff,
         fare: fare,
         passengerCount: passengers,
+        stops: stopsWithAddress,
         paymentMethod: 'Cash', 
       };
   
@@ -91,9 +121,14 @@ const Checkout = () => {
         </div>
   */}
       </div>
-      <div className="border rounded-md sm:w-[450px] w-[370px] sm:h-[23vh] h-[28vh] px-2 mt-5 pt-5 space-y-2">
+      <div className="border rounded-md sm:w-[450px] w-[370px] sm:h-[28vh] h-[30vh] px-2 mt-5 pt-5 space-y-2">
       <p className="font-bold">Pickup Location: <span className="font-normal">{pickup}</span></p>
       <p className="font-bold">Dropoff Location: <span className="font-normal">{dropoff}</span></p>
+      {stopsWithAddress.map((stop, index) => (
+          <p key={index} className="font-bold">Stop {index + 1}: 
+            <span className="font-normal">{stop.address || 'Loading address...'}</span>
+          </p>
+        ))}
       <p className="font-bold">Fare: $<span className="font-normal">{fare}</span></p>
       <p className="flex items-center gap-4"> <IoMdPerson size={24} /> {passengers}</p>
       </div>

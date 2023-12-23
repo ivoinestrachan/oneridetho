@@ -5,16 +5,9 @@ import { authOptions } from "./auth/[...nextauth]";
 import twilio from "twilio";
 
 const prisma = new PrismaClient();
+const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
@@ -22,77 +15,74 @@ export default async function handler(
     return;
   }
 
-  const userId = parseInt(session.user.id);
-
   if (!session.user || !session.user.image) {
     res.status(400).json({ message: "You must have a profile photo to book a ride." });
     return;
   }
+
+  const userId = parseInt(session.user.id);
+
   try {
     const {
       pickupLocation,
       dropoffLocation,
+      stops, // Array of stops
       fare,
       passengerCount,
       paymentMethod,
-      phoneNumbers,
     } = req.body;
+
+    if (stops && stops.length > 3) {
+      res.status(400).json({ message: "You can only add up to 3 stops." });
+      return;
+    }
 
     const ride = await prisma.ride.create({
       data: {
-        pickupTime: new Date(),
-        dropoffTime: null,
-        fare: parseFloat(fare),
-        tip: 5,
         userId,
-        driverId: null,
-        status: "Requested",
         pickupLocation,
         dropoffLocation,
-        passengerCount: parseInt(passengerCount),
+        stops: JSON.stringify(stops), 
+        pickupTime: new Date(),
+        fare: parseFloat(fare),
+        tip: 5, 
+        passengerCount: parseInt(passengerCount, 10),
         isAccepted: false,
         isConfirmed: false,
         paymentMethod,
+        status: 'Requested',
+        stopWaitTimes: JSON.stringify([]),
+        extraCharges: 0, 
       },
     });
 
-    const booking = await prisma.booking.create({
-      data: {
-        rideId: ride.id,
-        userId,
-        driverId: null,
-        createdAt: new Date(),
-        isAccepted: false,
-      },
-    });
-
-    const driverNumbers = ["12424251480", /*"12428108059" */];
-    const messageBody = `Ride booked!
+    const driverNumbers = ["12424251480"];
+    const messageBody = `New Ride Request:
 Pickup: ${pickupLocation},
-Drop-off: ${dropoffLocation}
-Passengers: ${passengerCount}
+Drop-off: ${dropoffLocation},
+Stops: ${stops.join(', ')},
+Passengers: ${passengerCount},
 View details: https://driver-oneridetho.vercel.app/dashboard?rideId=${ride.id}`;
 
     for (const number of driverNumbers) {
       try {
-        const message = await twilioClient.messages.create({
+        await twilioClient.messages.create({
           from: process.env.TWILIO_PHONE_NUMBER,
           body: messageBody,
           to: number,
         });
-        console.log(`Message sent to ${number}: ${message.sid}`);
       } catch (error) {
-        console.error(`Failed to send message to ${number}: ${error}`);
-      }
+        console.error("Error in booking ride:", (error as Error).message);
+        res.status(500).json({ message: "Internal Server Error" });
+      }      
     }
-
 
     res.status(200).json({
       message: "Ride booked successfully!",
-      bookingId: booking.id,
       rideId: ride.id,
     });
   } catch (error) {
     console.error("Error in booking ride:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }

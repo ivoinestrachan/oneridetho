@@ -84,6 +84,9 @@ model Ride {
   status          RideStatus
   pickupLocation  Json
   dropoffLocation Json
+  stops          Json?       
+  stopWaitTimes  Json?        
+  extraCharges   Float?        @default(0)
   passengerCount  Int        @default(1)
   isAccepted      Boolean?
   isConfirmed     Boolean

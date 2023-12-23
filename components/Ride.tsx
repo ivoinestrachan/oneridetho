@@ -16,9 +16,11 @@ interface Coordinates {
 function SimpleMap({
   pickupCoordinates,
   dropoffCoordinates,
+  stops,
 }: {
   pickupCoordinates: Coordinates | null;
   dropoffCoordinates: Coordinates | null;
+  stops: Coordinates[];
 }) {
   const mapOptions = {
     fullscreenControl: false,
@@ -44,23 +46,29 @@ function SimpleMap({
     if (pickupCoordinates && dropoffCoordinates) {
       const directionsService = new window.google.maps.DirectionsService();
 
-      directionsService.route(
-        {
-          origin: pickupCoordinates,
-          destination: dropoffCoordinates,
-          travelMode: window.google.maps.TravelMode.DRIVING,
-        },
-        (result, status) => {
-          if (status === window.google.maps.DirectionsStatus.OK) {
-            setDirectionsResult(result);
-          } else {
-            console.error(`Error fetching directions: ${status}`);
-            setDirectionsResult(null);
-          }
+      const waypoints = stops.map(stop => ({
+        location: new window.google.maps.LatLng(stop.lat, stop.lng),
+        stopover: true
+      }));
+
+      const request = {
+        origin: pickupCoordinates,
+        destination: dropoffCoordinates,
+        waypoints: waypoints,
+        optimizeWaypoints: true, 
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      };
+
+      directionsService.route(request, (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK) {
+          setDirectionsResult(result);
+        } else {
+          console.error(`Error fetching directions: ${status}`);
+          setDirectionsResult(null);
         }
-      );
+      });
     }
-  }, [pickupCoordinates, dropoffCoordinates]);
+  }, [pickupCoordinates, dropoffCoordinates, stops]);
 
   if (!isLoaded) return <div>Loading...</div>;
 
@@ -91,10 +99,21 @@ const Ride = () => {
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [scheduledPickupTime, setScheduledPickupTime] = useState("");
   const [showScheduleInput, setShowScheduleInput] = useState(false);
+  const [stops, setStops] = useState<Coordinates[]>([]);
+  const stopInputRefs = useRef<HTMLInputElement[]>([]);
+
+  const addStop = () => {
+    if (stops.length < 3) {
+      setStops([...stops, { lat: 0, lng: 0 }]);
+    } else {
+      alert("You can add up to 3 stops only.");
+    }
+  };
 
   const handleScheduleClick = () => {
     setShowScheduleInput(true);
   };
+  
   
 
   const [pickupCoordinates, setPickupCoordinates] =
@@ -110,51 +129,74 @@ const Ride = () => {
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const dropoffInputRef = useRef<HTMLInputElement>(null);
 
-  const calculateFare = (distance: number, passengers: number): string => {
+  const calculateFare = (distance: number, passengers: number, stops: number): string => {
     const baseFare = 10;
     const distanceCharge = distance * 2;
     const passengerCharge = (passengers - 1) * 2;
+    const stopCharge = stops * 5; 
 
     const currentHour = new Date().getHours();
     const isNightFee = currentHour >= 23 || currentHour < 6;
     const nightFee = isNightFee ? 5 : 0;
 
-    const totalFare = baseFare + distanceCharge + passengerCharge + nightFee;
+    const totalFare = baseFare + distanceCharge + passengerCharge + nightFee + stopCharge;
     return totalFare.toFixed(2);
   };
 
   useEffect(() => {
     if (distance) {
-      setFare(calculateFare(parseFloat(distance), passengers));
+      setFare(calculateFare(parseFloat(distance), passengers, stops.length));
     }
-  }, [passengers]);
+  }, [passengers, stops.length, distance]);
 
   const handleCalculateDistance = async () => {
-    if (pickupCoordinates && dropoffCoordinates) {
-      const service = new window.google.maps.DistanceMatrixService();
-      service.getDistanceMatrix(
-        {
-          origins: [pickupCoordinates],
-          destinations: [dropoffCoordinates],
-          travelMode: window.google.maps.TravelMode.DRIVING,
-        },
-        (response, status) => {
-          if (status === "OK" && response) {
-            const distanceInMeters =
-              response.rows[0].elements[0].distance.value;
-            const distanceInMiles = distanceInMeters / 1609.34;
-            setFare(calculateFare(distanceInMiles, passengers));
-          } else {
-            console.error("Error calculating distance: " + status);
-          }
-        }
-      );
+    if (!pickupCoordinates || !dropoffCoordinates || stops.some(stop => !stop.lat || !stop.lng)) {
+      console.error("Invalid coordinates for calculation");
+      return;
     }
+  
+    const directionsService = new window.google.maps.DirectionsService();
+  
+    const waypoints = stops.map(stop => ({
+      location: new window.google.maps.LatLng(stop.lat, stop.lng),
+      stopover: true
+    }));
+  
+    const request = {
+      origin: new window.google.maps.LatLng(pickupCoordinates.lat, pickupCoordinates.lng),
+      destination: new window.google.maps.LatLng(dropoffCoordinates.lat, dropoffCoordinates.lng),
+      waypoints: waypoints,
+      travelMode: window.google.maps.TravelMode.DRIVING,
+      optimizeWaypoints: true
+    };
+  
+    directionsService.route(request, (result, status) => {
+      if (status === window.google.maps.DirectionsStatus.OK) {
+        //@ts-ignore
+        const route = result.routes[0];
+        let totalDistance = 0;
+  
+        route.legs.forEach(leg => {
+          if (leg.distance) { 
+            totalDistance += leg.distance.value;
+          }
+        });
+  
+        const distanceInMiles = totalDistance / 1609.34; 
+        setDistance(distanceInMiles.toFixed(2));
+        setFare(calculateFare(distanceInMiles, passengers, stops.length));
+      } else {
+        console.error("Error calculating route:", status);
+      }
+    });
   };
+  
+  
+  
 
   useEffect(() => {
     handleCalculateDistance();
-  }, [pickupCoordinates, dropoffCoordinates, passengers]);
+  }, [pickupCoordinates, dropoffCoordinates, passengers, stops, stops.length]);
 
   const handleBooking = () => {
     const pickupLocation = pickupInputRef.current?.value;
@@ -167,6 +209,7 @@ const Ride = () => {
           pickup: pickupLocation,
           dropoff: dropoffLocation,
           fare: fare,
+          stops,
           passengers: passengers,
         })
       );
@@ -178,6 +221,7 @@ const Ride = () => {
           dropoff: dropoffLocation,
           fare: fare,
           passengers: passengers,
+          stops: encodeURIComponent(JSON.stringify(stops))
         },
       });
     }
@@ -268,6 +312,7 @@ const Ride = () => {
       window.google.maps.event.clearInstanceListeners(dropoffAutocomplete);
     };
   }, [isLoaded]);
+  
 
   useEffect(() => {
     if (router.query.editing) {
@@ -301,6 +346,39 @@ const Ride = () => {
         }
       });
     });
+  };
+
+  useEffect(() => {
+    if (!isLoaded) return;
+  
+    stopInputRefs.current.forEach((ref, index) => {
+      if (!ref) return;
+  
+      const autocomplete = new window.google.maps.places.Autocomplete(ref, {
+        componentRestrictions: { country: "BS" },
+      });
+  
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry?.location) {
+          const updatedStops = [...stops];
+          updatedStops[index] = {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+          };
+          setStops(updatedStops);
+        }
+      });
+    });
+  }, [isLoaded, stops.length]);
+  
+  
+  const assignRef = (element: HTMLInputElement | null, index: number) => {
+    if (element) {
+      stopInputRefs.current[index] = element;
+    } else {
+      stopInputRefs.current.splice(index, 1);
+    }
   };
 
   const getUserLocation = () => {
@@ -349,11 +427,21 @@ const Ride = () => {
             />
           </div>
           <div>
-            <button className="bg-black text-white rounded-md py-2.5 pr-5 pl-5 text-[20px]">
+            <button onClick={addStop}  className="bg-black text-white rounded-md py-2.5 pr-5 pl-5 text-[20px]">
               +
             </button>
           </div>
         </div>
+        {stops.map((stop, index) => (
+  <div key={index}>
+    <input
+      ref={el => assignRef(el, index)}
+      type="text"
+      placeholder={`Stop ${index + 1}`}
+      className="outline-none bg-gray-200 py-3 pl-2 rounded-md sm:w-[150%] w-[90%]"
+    />
+  </div>
+))}
         <div className="flex items-center">
           <div>
             <input
@@ -417,6 +505,7 @@ const Ride = () => {
       <SimpleMap
         pickupCoordinates={pickupCoordinates}
         dropoffCoordinates={dropoffCoordinates}
+        stops={stops}
       />
     </div>
   );
