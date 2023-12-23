@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const {
       pickupLocation,
       dropoffLocation,
-      stops, // Array of stops
+      stops,
       fare,
       passengerCount,
       paymentMethod,
@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const messageBody = `New Ride Request:
 Pickup: ${pickupLocation},
 Drop-off: ${dropoffLocation},
-Stops: ${stops.join(', ')},
+Stops: ${stops.map((stop: { address: any; }) => stop.address).join(', ')},
 Passengers: ${passengerCount},
 View details: https://driver-oneridetho.vercel.app/dashboard?rideId=${ride.id}`;
 
