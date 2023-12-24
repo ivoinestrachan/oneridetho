@@ -10,7 +10,8 @@ const nextConfig = {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
     TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
-    TWILIO_WHATSAPP_NUMBER: process.env.TWILIO_PHONE_NUMBER
+    TWILIO_WHATSAPP_NUMBER: process.env.TWILIO_PHONE_NUMBER,
+    PAYPAL_CLI: process.env.PAYPAL_CLI
   },
 
   images: {

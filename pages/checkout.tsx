@@ -168,7 +168,7 @@ const Checkout = () => {
   return (
     <div className="px-2 mt-5">
       <h1 className="font-bold text-[32px]">Checkout</h1>
-      <div className="flex items-center gap-3">
+      <div >
    <div id="paypal-button-container">
    </div>
     {/*
@@ -177,13 +177,13 @@ const Checkout = () => {
             Pay with Cash
           </button>
         </div>
-    
+      */}
         <div>
-          <button className="py-3 bg-black text-white pl-4 pr-4 rounded-md mt-5">
-            Pay with Card
+          <button className="py-3 bg-black text-white pl-4 pr-4 rounded-md mt-5 sm:w-auto w-full text-center">
+            Pay with Cash
           </button>
         </div>
-  */}
+
       </div>
       <div className="border rounded-md sm:w-[450px] w-[370px] sm:h-[28vh] h-[30vh] px-2 mt-5 pt-5 space-y-2">
       <p className="font-bold">Pickup Location: <span className="font-normal">{pickup}</span></p>
