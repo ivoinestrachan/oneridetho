@@ -11,9 +11,17 @@ interface Stop {
   address?: string; 
 }
 
+declare global {
+  interface Window {
+    paypal?: any; 
+  }
+}
+
 const Checkout = () => {
   const router = useRouter();
   const { pickup, dropoff, fare, passengers, stops: stopsQuery } = router.query;
+  const [isPayPalReady, setPayPalReady] = useState(false);
+  const [paypalSdkReady, setPaypalSdkReady] = useState(false);
  
   const { data: session, status } = useSession();
   const [showProfilePhotoMessage, setShowProfilePhotoMessage] = useState(false);
@@ -87,6 +95,60 @@ const Checkout = () => {
     }
   };
   
+  useEffect(() => {
+    if (typeof window !== "undefined" && !window.paypal) {
+      loadPayPalSdk();
+    }
+  }, []);
+
+  const loadPayPalSdk = () => {
+    const script = document.createElement("script");
+    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.PAYPAL_CLI}`;
+    script.onload = () => {
+      setPaypalSdkReady(true);
+      renderPayPalButton();
+    };
+    document.body.appendChild(script);
+  };
+  const renderPayPalButton = () => {
+    console.log("Rendering PayPal button with fare:", fare); 
+  
+    if (!window.paypal || !document.getElementById("paypal-button-container")) {
+      console.error("PayPal button cannot be rendered yet.");
+      return;
+    }
+  
+
+    const paypalButtonContainer = document.getElementById("paypal-button-container");
+    if (!paypalButtonContainer) {
+      console.error("PayPal button container not found.");
+      return;
+    }
+
+    if (paypalButtonContainer.childElementCount > 0) {
+ 
+      return;
+    }
+
+    window.paypal.Buttons({
+      createOrder: (data: any, actions: any) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: fare,
+            },
+          }],
+        });
+      },
+    }).render('#paypal-button-container');
+  };
+
+  useEffect(() => {
+    if (paypalSdkReady) {
+      renderPayPalButton();
+    }
+  }, [paypalSdkReady]);
+  
 
   useEffect(() => {
     if (status === 'loading') return; 
@@ -107,13 +169,15 @@ const Checkout = () => {
     <div className="px-2 mt-5">
       <h1 className="font-bold text-[32px]">Checkout</h1>
       <div className="flex items-center gap-3">
-        {/*
+   <div id="paypal-button-container">
+   </div>
+    {/*
         <div>
           <button className="py-3 bg-black text-white pl-4 pr-4 rounded-md mt-5">
             Pay with Cash
           </button>
         </div>
-
+    
         <div>
           <button className="py-3 bg-black text-white pl-4 pr-4 rounded-md mt-5">
             Pay with Card
