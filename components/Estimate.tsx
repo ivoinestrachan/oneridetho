@@ -229,12 +229,12 @@ const Estimate = () => {
   };
 
   return (
-    <div className="bg-gray-100 sm:pr-[250px] sm:pl-[40px] py-4 pl-3 pr-3 rounded-md">
+    <div className="bg-gray-100 sm:pr-[100px] sm:pl-[40px] py-4 pl-3 pr-3 rounded-md">
       <div className="space-y-4">
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
         <button onClick={getUserLocation}>Use Current Location</button>
         <div className="flex items-center  justify-between  ">
-          <div className="flex items-center w-[500px]">
+          <div className="sm:blcok flex items-center sm:w-[370px] w-[500px]">
             <input
               ref={pickupInputRef}
               placeholder="Pickup Location"
@@ -258,7 +258,7 @@ const Estimate = () => {
             />
           </div>
         </div>
-        <div className="flex items-center border border-gray-200 rounded-md py-2 pl-3 justify-between sm:w-[150%] w-[95%]">
+        <div className="flex items-center border border-gray-200 rounded-md py-2 pl-3 justify-between sm:w-[100%] w-[95%]">
           <div>Fare: ${fare}</div>
           <div className="flex items-center gap-2 w-[26%]">
             <div>
