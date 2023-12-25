@@ -242,6 +242,7 @@ const Ride = () => {
       scheduledPickupTime,
       fare: fare,
       passengerCount: passengers,
+      stops: encodeURIComponent(JSON.stringify(stops)),
       paymentMethod: "Cash",
     };
 
