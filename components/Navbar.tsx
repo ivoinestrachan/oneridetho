@@ -158,11 +158,11 @@ const Navbar = () => {
                 />
               </div>
 
-              <div onClick={handleDropdown} className="cursor-pointer">
+              <div onClick={handleDropdown} className="cursor-pointer bg-white py-2 pr-4 pl-4 text-black rounded-full">
                 {session.user?.name}
               </div>
               {dropdownOpen && (
-                <div className="absolute bg-white p-2 rounded shadow mt-[145px]  sm:w-[10%] w-[25%]">
+                <div className="absolute bg-white p-2 rounded shadow sm:mt-[120px] mt-[160px]  sm:w-[10%] w-[30%] sm:ml-[50px] ml-[80px]">
                   <ul>
                     <Link href="/book">
                       <li className="text-black hover:bg-gray-200 w-full sm:hidden">
