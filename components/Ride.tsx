@@ -257,6 +257,8 @@ const Ride = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("Scheduled ride successfully:", data);
+        alert("Ride scheduled successfully!");
+        router.push("/");
       } else {
         console.error("Failed to schedule ride:", await response.text());
       }
