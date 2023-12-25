@@ -46,16 +46,16 @@ function SimpleMap({
     if (pickupCoordinates && dropoffCoordinates) {
       const directionsService = new window.google.maps.DirectionsService();
 
-      const waypoints = stops.map(stop => ({
+      const waypoints = stops.map((stop) => ({
         location: new window.google.maps.LatLng(stop.lat, stop.lng),
-        stopover: true
+        stopover: true,
       }));
 
       const request = {
         origin: pickupCoordinates,
         destination: dropoffCoordinates,
         waypoints: waypoints,
-        optimizeWaypoints: true, 
+        optimizeWaypoints: true,
         travelMode: window.google.maps.TravelMode.DRIVING,
       };
 
@@ -113,8 +113,6 @@ const Ride = () => {
   const handleScheduleClick = () => {
     setShowScheduleInput(true);
   };
-  
-  
 
   const [pickupCoordinates, setPickupCoordinates] =
     useState<Coordinates | null>(null);
@@ -129,17 +127,22 @@ const Ride = () => {
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const dropoffInputRef = useRef<HTMLInputElement>(null);
 
-  const calculateFare = (distance: number, passengers: number, stops: number): string => {
-    const baseFare = 9;
+  const calculateFare = (
+    distance: number,
+    passengers: number,
+    stops: number
+  ): string => {
+    const baseFare = 8;
     const distanceCharge = distance * 2;
     const passengerCharge = (passengers - 1) * 2;
-    const stopCharge = stops * 5; 
+    const stopCharge = stops * 5;
 
     const currentHour = new Date().getHours();
     const isNightFee = currentHour >= 23 || currentHour < 6;
     const nightFee = isNightFee ? 5 : 0;
 
-    const totalFare = baseFare + distanceCharge + passengerCharge + nightFee + stopCharge;
+    const totalFare =
+      baseFare + distanceCharge + passengerCharge + nightFee + stopCharge;
     return totalFare.toFixed(2);
   };
 
@@ -150,39 +153,49 @@ const Ride = () => {
   }, [passengers, stops.length, distance]);
 
   const handleCalculateDistance = async () => {
-    if (!pickupCoordinates || !dropoffCoordinates || stops.some(stop => !stop.lat || !stop.lng)) {
+    if (
+      !pickupCoordinates ||
+      !dropoffCoordinates ||
+      stops.some((stop) => !stop.lat || !stop.lng)
+    ) {
       console.error("Invalid coordinates for calculation");
       return;
     }
-  
+
     const directionsService = new window.google.maps.DirectionsService();
-  
-    const waypoints = stops.map(stop => ({
+
+    const waypoints = stops.map((stop) => ({
       location: new window.google.maps.LatLng(stop.lat, stop.lng),
-      stopover: true
+      stopover: true,
     }));
-  
+
     const request = {
-      origin: new window.google.maps.LatLng(pickupCoordinates.lat, pickupCoordinates.lng),
-      destination: new window.google.maps.LatLng(dropoffCoordinates.lat, dropoffCoordinates.lng),
+      origin: new window.google.maps.LatLng(
+        pickupCoordinates.lat,
+        pickupCoordinates.lng
+      ),
+      destination: new window.google.maps.LatLng(
+        dropoffCoordinates.lat,
+        dropoffCoordinates.lng
+      ),
       waypoints: waypoints,
       travelMode: window.google.maps.TravelMode.DRIVING,
-      optimizeWaypoints: true
+      optimizeWaypoints: true,
     };
-  
+
     directionsService.route(request, (result, status) => {
       if (status === window.google.maps.DirectionsStatus.OK) {
         //@ts-ignore
         const route = result.routes[0];
         let totalDistance = 0;
-  
-        route.legs.forEach(leg => {
-          if (leg.distance) { 
+
+        route.legs.forEach((leg) => {
+          if (leg.distance) {
             totalDistance += leg.distance.value;
           }
         });
-  
-        const distanceInMiles = totalDistance / 1609.34; 
+
+        const distanceInMiles = totalDistance / 1609.34;
         setDistance(distanceInMiles.toFixed(2));
         setFare(calculateFare(distanceInMiles, passengers, stops.length));
       } else {
@@ -190,9 +203,6 @@ const Ride = () => {
       }
     });
   };
-  
-  
-  
 
   useEffect(() => {
     handleCalculateDistance();
@@ -221,7 +231,7 @@ const Ride = () => {
           dropoff: dropoffLocation,
           fare: fare,
           passengers: passengers,
-          stops: encodeURIComponent(JSON.stringify(stops))
+          stops: encodeURIComponent(JSON.stringify(stops)),
         },
       });
     }
@@ -314,7 +324,6 @@ const Ride = () => {
       window.google.maps.event.clearInstanceListeners(dropoffAutocomplete);
     };
   }, [isLoaded]);
-  
 
   useEffect(() => {
     if (router.query.editing) {
@@ -352,14 +361,14 @@ const Ride = () => {
 
   useEffect(() => {
     if (!isLoaded) return;
-  
+
     stopInputRefs.current.forEach((ref, index) => {
       if (!ref) return;
-  
+
       const autocomplete = new window.google.maps.places.Autocomplete(ref, {
         componentRestrictions: { country: "BS" },
       });
-  
+
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
         if (place.geometry?.location) {
@@ -373,8 +382,7 @@ const Ride = () => {
       });
     });
   }, [isLoaded, stops.length]);
-  
-  
+
   const assignRef = (element: HTMLInputElement | null, index: number) => {
     if (element) {
       stopInputRefs.current[index] = element;
@@ -415,35 +423,50 @@ const Ride = () => {
     getUserLocation();
   }, []);
 
+  const clearPickupInput = () => {
+    if (pickupInputRef.current) {
+      pickupInputRef.current.value = "";
+    }
+  };
   return (
     <div className="mt-5 sm:flex justify-between sm:bg-none bg-white sm:py-0 py-4 sm:pl-0 sm:pr-0 pl-3 pr-3 rounded-md sm:relative sm:top-0 relative top-[390px]">
       <div className="space-y-4">
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
         <button onClick={getUserLocation}>Use Current Location</button>
         <div className="flex items-center  justify-between sm:w-[173%] w-[103%] sm:pt-10">
-          <div>
+          <div className="sm:block flex items-center">
             <input
               ref={pickupInputRef}
               placeholder="Pickup Location"
-              className="outline-none bg-gray-200 py-3  pl-2 rounded-md sm:w-[190%] w-[150%]"
+              className="outline-none bg-gray-200 py-3  pl-2 rounded-md sm:w-[190%] w-[300px]"
             />
+
+            <button
+              onClick={clearPickupInput}
+              className="absolute sm:hidden block ml-[65vw] bg-white pl-3 pr-3 rounded-full py-1"
+            >
+              X
+            </button>
           </div>
           <div>
-            <button onClick={addStop}  className="bg-black text-white rounded-md py-2.5 pr-5 pl-5 text-[20px]">
+            <button
+              onClick={addStop}
+              className="bg-black text-white rounded-md py-2.5 pr-5 pl-5 text-[20px]"
+            >
               +
             </button>
           </div>
         </div>
         {stops.map((stop, index) => (
-  <div key={index}>
-    <input
-      ref={el => assignRef(el, index)}
-      type="text"
-      placeholder={`Stop ${index + 1}`}
-      className="outline-none bg-gray-200 py-3 pl-2 rounded-md sm:w-[150%] w-[90%]"
-    />
-  </div>
-))}
+          <div key={index}>
+            <input
+              ref={(el) => assignRef(el, index)}
+              type="text"
+              placeholder={`Stop ${index + 1}`}
+              className="outline-none bg-gray-200 py-3 pl-2 rounded-md sm:w-[150%] w-[90%]"
+            />
+          </div>
+        ))}
         <div className="flex items-center">
           <div>
             <input
@@ -490,19 +513,21 @@ const Ride = () => {
           </div>
         )}
         {showScheduleInput && (
-  <div>
-    <input
-      type="datetime-local"
-      value={scheduledPickupTime}
-      onChange={(e) => setScheduledPickupTime(e.target.value)}
-      className="outline-none bg-gray-200 py-3 pl-2 rounded-md"
-    />
-    <button onClick={handleScheduleForLater} className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md ml-2 mt-2">
-      Confirm
-    </button>
-  </div>
-)}
-
+          <div>
+            <input
+              type="datetime-local"
+              value={scheduledPickupTime}
+              onChange={(e) => setScheduledPickupTime(e.target.value)}
+              className="outline-none bg-gray-200 py-3 pl-2 rounded-md"
+            />
+            <button
+              onClick={handleScheduleForLater}
+              className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md ml-2 mt-2"
+            >
+              Confirm
+            </button>
+          </div>
+        )}
       </div>
       <SimpleMap
         pickupCoordinates={pickupCoordinates}

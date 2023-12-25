@@ -12,14 +12,12 @@ interface Coordinates {
   lng: number;
 }
 
-
 const Estimate = () => {
   const [distance, setDistance] = useState<string | null>(null);
   const [passengers, setPassengers] = useState(1);
   const [fare, setFare] = useState("");
   const [pickupClicked, setPickupClicked] = useState(false);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
-
 
   const [pickupCoordinates, setPickupCoordinates] =
     useState<Coordinates | null>(null);
@@ -28,7 +26,7 @@ const Estimate = () => {
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.API_KEY || "",
-    libraries: ["places","geocoding"],
+    libraries: ["places", "geocoding"],
   });
 
   const handlePickupClick = () => {
@@ -40,7 +38,7 @@ const Estimate = () => {
   const dropoffInputRef = useRef<HTMLInputElement>(null);
 
   const calculateFare = (distance: number, passengers: number): string => {
-    const baseFare = 9;
+    const baseFare = 8;
     const distanceCharge = distance * 2;
     const passengerCharge = (passengers - 1) * 2;
 
@@ -116,15 +114,21 @@ const Estimate = () => {
       return;
     }
 
-    const pickupAutocomplete = new window.google.maps.places.Autocomplete(pickupInputRef.current, {
-      strictBounds: true,
-      componentRestrictions: { country: "BS" },
-    });
+    const pickupAutocomplete = new window.google.maps.places.Autocomplete(
+      pickupInputRef.current,
+      {
+        strictBounds: true,
+        componentRestrictions: { country: "BS" },
+      }
+    );
 
-    const dropoffAutocomplete = new window.google.maps.places.Autocomplete(dropoffInputRef.current, {
-      strictBounds: true,
-      componentRestrictions: { country: "BS" },
-    });
+    const dropoffAutocomplete = new window.google.maps.places.Autocomplete(
+      dropoffInputRef.current,
+      {
+        strictBounds: true,
+        componentRestrictions: { country: "BS" },
+      }
+    );
 
     pickupAutocomplete.addListener("place_changed", () => {
       const place = pickupAutocomplete.getPlace();
@@ -173,20 +177,18 @@ const Estimate = () => {
     const geocoder = new window.google.maps.Geocoder();
     return new Promise((resolve, reject) => {
       geocoder.geocode({ location: coordinates }, (results, status) => {
-        if (status === 'OK') {
+        if (status === "OK") {
           if (results && results[0]) {
             resolve(results[0].formatted_address);
           } else {
-            reject(new Error('No results found'));
+            reject(new Error("No results found"));
           }
         } else {
-          reject(new Error('Geocoder failed due to: ' + status));
+          reject(new Error("Geocoder failed due to: " + status));
         }
       });
     });
   };
-  
-  
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -204,22 +206,27 @@ const Estimate = () => {
               pickupInputRef.current.value = address;
             }
           } catch (error) {
-            console.error('Error getting address:', error);
+            console.error("Error getting address:", error);
           }
         },
         (error) => {
-          console.error('Error getting location:', error.message);
+          console.error("Error getting location:", error.message);
         }
       );
     } else {
-      console.error('Geolocation is not supported by this browser.');
+      console.error("Geolocation is not supported by this browser.");
     }
   };
-
 
   useEffect(() => {
     getUserLocation();
   }, []);
+
+  const clearPickupInput = () => {
+    if (pickupInputRef.current) {
+      pickupInputRef.current.value = "";
+    }
+  };
 
   return (
     <div className="bg-gray-100 sm:pr-[250px] sm:pl-[40px] py-4 pl-3 pr-3 rounded-md">
@@ -227,12 +234,19 @@ const Estimate = () => {
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
         <button onClick={getUserLocation}>Use Current Location</button>
         <div className="flex items-center  justify-between  ">
-          <div>
+          <div className="flex items-center w-[500px]">
             <input
               ref={pickupInputRef}
               placeholder="Pickup Location"
               className="outline-none bg-gray-200 py-3  pl-2 rounded-md sm:w-[200%] w-[190%]"
             />
+
+            <button
+              onClick={clearPickupInput}
+              className="absolute sm:hidden block ml-[80vw] bg-white pl-3 pr-3 rounded-full py-1"
+            >
+              X
+            </button>
           </div>
         </div>
         <div className="flex items-center">
@@ -274,16 +288,15 @@ const Estimate = () => {
           <div>
             {pickupClicked && (
               <button
-              onClick={handleBooking}
-              className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md"
-            >
-            Book Now
-            </button>
+                onClick={handleBooking}
+                className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md"
+              >
+                Book Now
+              </button>
             )}
-            </div>
+          </div>
         </div>
       </div>
-     
     </div>
   );
 };
