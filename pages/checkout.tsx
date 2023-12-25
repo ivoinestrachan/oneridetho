@@ -29,6 +29,8 @@ const Checkout = () => {
 
   
   const [stopsWithAddress, setStopsWithAddress] = useState<Stop[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState('');
+
 
   useEffect(() => {
     let stops: Stop[] = [];
@@ -56,6 +58,10 @@ const Checkout = () => {
   };
 
   const handleCheckout = async () => {
+    if (!paymentMethod) {
+      console.error('No payment method selected.');
+      return;
+    }
     try {
       const bookingData = {
         pickupLocation: pickup,
@@ -63,7 +69,7 @@ const Checkout = () => {
         fare: fare,
         passengerCount: passengers,
         stops: stopsWithAddress,
-        paymentMethod: 'Cash', 
+        paymentMethod: paymentMethod, 
       };
   
       const response = await axios.post('/api/bookings', bookingData);
@@ -100,6 +106,10 @@ const Checkout = () => {
       loadPayPalSdk();
     }
   }, []);
+
+  const handlePaymentMethodChange = (method: any) => {
+    setPaymentMethod(method);
+  };
 
   const loadPayPalSdk = () => {
     const script = document.createElement("script");
@@ -140,9 +150,17 @@ const Checkout = () => {
           }],
         });
       },
+      onApprove: (data: any, actions: any) => {
+        return actions.order.capture().then((details: any) => {
+          console.log('Payment Successful:', details);
+          setPaymentMethod('Card'); 
+        });
+      },
+      onError: (err:any) => {
+        console.error('Payment Error:', err);
+      }
     }).render('#paypal-button-container');
   };
-
   useEffect(() => {
     if (paypalSdkReady) {
       renderPayPalButton();
@@ -179,7 +197,9 @@ const Checkout = () => {
         </div>
       */}
         <div>
-          <button className="py-3 bg-black text-white pl-4 pr-4 rounded-md mt-5 sm:w-auto w-full text-center">
+          <button className="py-3 bg-black text-white pl-4 pr-4 rounded-md mt-5 sm:w-auto w-full text-center"
+           onClick={() => handlePaymentMethodChange('Cash')}
+          >
             Pay with Cash
           </button>
         </div>
@@ -205,6 +225,7 @@ const Checkout = () => {
             Edit Ride
           </button>
         </div>
+        {paymentMethod && (
         <div>
           <button className="py-3 bg-black text-white pl-12 pr-12 rounded-md mt-5"
           onClick={handleCheckout}
@@ -212,6 +233,7 @@ const Checkout = () => {
             Confirm Ride
           </button>
         </div>
+        )}
       </div>
       {showProfilePhotoMessage && (
         <div className="mt-5 p-4 bg-red-100 border border-red-400 text-red-700 sm:w-[50%]">
