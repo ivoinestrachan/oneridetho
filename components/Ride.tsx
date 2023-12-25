@@ -130,7 +130,7 @@ const Ride = () => {
   const dropoffInputRef = useRef<HTMLInputElement>(null);
 
   const calculateFare = (distance: number, passengers: number, stops: number): string => {
-    const baseFare = 10;
+    const baseFare = 9;
     const distanceCharge = distance * 2;
     const passengerCharge = (passengers - 1) * 2;
     const stopCharge = stops * 5; 
