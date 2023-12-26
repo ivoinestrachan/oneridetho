@@ -244,7 +244,9 @@ const Ride = () => {
       alert("Please fill in all fields");
       return;
     }
-
+    const pickupLocation = pickupInputRef.current?.value;
+    const dropoffLocation = dropoffInputRef.current?.value;
+    
     const rideDetails = {
       userId: session?.user.id,
       pickupLocation: pickupInputRef.current?.value,
@@ -267,8 +269,18 @@ const Ride = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("Scheduled ride successfully:", data);
-        alert("Ride scheduled successfully!");
-        router.push("/");
+    
+        router.push({
+          pathname: "/checkout",
+          query: {
+              pickup: pickupLocation,
+              dropoff: dropoffLocation,
+              fare: fare,
+              passengers: passengers,
+              stops: encodeURIComponent(JSON.stringify(stops)),
+              isScheduled: true, // Add this line
+          },
+      });
       } else {
         console.error("Failed to schedule ride:", await response.text());
       }
@@ -433,12 +445,12 @@ const Ride = () => {
       <div className="space-y-4">
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
         <button onClick={getUserLocation}>Use Current Location</button>
-        <div className="flex items-center  justify-between sm:w-[173%] w-[103%] sm:pt-10">
-          <div className="sm:block flex items-center">
+        <div className="flex items-center  justify-between  w-[103%] sm:pt-10">
+          <div className="flex items-center">
             <input
               ref={pickupInputRef}
               placeholder="Pickup Location"
-              className="outline-none bg-gray-200 py-3  pl-2 rounded-md sm:w-[190%] w-[300px]"
+              className="outline-none bg-gray-200 py-3  pl-2 rounded-md sm:w-[340px] w-[300px]"
             />
 
             <button
@@ -476,7 +488,7 @@ const Ride = () => {
             />
           </div>
         </div>
-        <div className="flex items-center border border-gray-200 rounded-md py-2 pl-3 justify-between sm:w-[150%] w-[95%]">
+        <div className="flex items-center border border-gray-200 rounded-md py-2 pl-3 justify-between  w-[95%]">
           <div>Fare: ${fare}</div>
           <div className="flex items-center gap-2 w-[26%]">
             <div>

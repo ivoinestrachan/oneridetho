@@ -19,7 +19,7 @@ declare global {
 
 const Checkout = () => {
   const router = useRouter();
-  const { pickup, dropoff, fare, passengers, stops: stopsQuery } = router.query;
+  const { pickup, dropoff, fare, passengers, stops: stopsQuery, isScheduled } = router.query;
   const [isPayPalReady, setPayPalReady] = useState(false);
   const [paypalSdkReady, setPaypalSdkReady] = useState(false);
  
@@ -71,6 +71,13 @@ const Checkout = () => {
         stops: stopsWithAddress,
         paymentMethod: paymentMethod, 
       };
+
+
+      if (isScheduled) {
+        alert('Ride scheduled successfully!');
+        router.push('/'); 
+        return;
+    }
   
       const response = await axios.post('/api/bookings', bookingData);
       const { rideId } = response.data;

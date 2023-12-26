@@ -6,6 +6,7 @@ import {
 } from "@react-google-maps/api";
 import { IoMdPerson } from "react-icons/io";
 import router from "next/router";
+import Link from "next/link";
 
 interface Coordinates {
   lat: number;
@@ -287,12 +288,14 @@ const Estimate = () => {
           </div>
           <div>
             {pickupClicked && (
+              <Link href="/book">
               <button
-                onClick={handleBooking}
+           
                 className="py-2.5 bg-black text-white pl-4 pr-4 rounded-md"
               >
                 Book Now
               </button>
+              </Link>
             )}
           </div>
         </div>
