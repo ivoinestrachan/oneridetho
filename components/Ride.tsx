@@ -278,7 +278,7 @@ const Ride = () => {
               fare: fare,
               passengers: passengers,
               stops: encodeURIComponent(JSON.stringify(stops)),
-              isScheduled: true, // Add this line
+              isScheduled: true,
           },
       });
       } else {
@@ -475,7 +475,7 @@ const Ride = () => {
               ref={(el) => assignRef(el, index)}
               type="text"
               placeholder={`Stop ${index + 1}`}
-              className="outline-none bg-gray-200 py-3 pl-2 rounded-md sm:w-[150%] w-[90%]"
+              className="outline-none bg-gray-200 py-3 pl-2 rounded-md sm:w-[90%] w-[90%]"
             />
           </div>
         ))}
