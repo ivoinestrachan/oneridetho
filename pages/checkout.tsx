@@ -76,6 +76,7 @@ const Checkout = () => {
         paymentMethod: paymentMethod, 
       };
 
+      console.log("Booking data being sent:", bookingData);
 
       if (isScheduled) {
         alert('Ride scheduled successfully!');
@@ -121,6 +122,7 @@ const Checkout = () => {
 
   const handlePaymentMethodChange = (method: any) => {
     setPaymentMethod(method);
+    console.log("Selected payment method:", method);
   };
 
   const loadPayPalSdk = () => {
