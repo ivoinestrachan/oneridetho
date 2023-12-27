@@ -65,6 +65,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const driverNumbers = drivers.map(driver => driver.phone).filter(phone => phone !== null);
 
     */
+
+    /* const dispatchers = ["12424212170", "12424701747", "12428086851", "12428108059"]; */
     const driverNumbers = ["12424251480"];
     const messageBody = `New Ride Request:
 Pickup: ${pickupLocation},

@@ -440,6 +440,12 @@ const Ride = () => {
       pickupInputRef.current.value = "";
     }
   };
+
+  const removeStop = (index: number) => {
+    const newStops = stops.filter((_, stopIndex) => stopIndex !== index);
+    setStops(newStops);
+  };
+  
   return (
     <div className="mt-5 sm:flex justify-between sm:bg-none bg-white sm:py-0 py-4 sm:pl-0 sm:pr-0 pl-3 pr-3 rounded-md sm:relative sm:top-0 relative top-[390px]">
       <div className="space-y-4">
@@ -470,13 +476,16 @@ const Ride = () => {
           </div>
         </div>
         {stops.map((stop, index) => (
-          <div key={index}>
+          <div key={index} className="flex space-x-4">
             <input
               ref={(el) => assignRef(el, index)}
               type="text"
               placeholder={`Stop ${index + 1}`}
               className="outline-none bg-gray-200 py-3 pl-2 rounded-md sm:w-[90%] w-[90%]"
             />
+            <span
+            onClick={() => removeStop(index)}
+            className="bg-black text-white rounded-md py-2.5 pr-5 pl-5 text-[20px]">-</span>
           </div>
         ))}
         <div className="flex items-center">
