@@ -103,12 +103,18 @@ const Ride = () => {
   const stopInputRefs = useRef<HTMLInputElement[]>([]);
 
   const addStop = () => {
+    if (!dropoffCoordinates) {
+      alert("Please add a dropoff location first.");
+      return;
+    }
+  
     if (stops.length < 3) {
       setStops([...stops, { lat: 0, lng: 0 }]);
     } else {
       alert("You can add up to 3 stops only.");
     }
   };
+  
 
   const handleScheduleClick = () => {
     setShowScheduleInput(true);
