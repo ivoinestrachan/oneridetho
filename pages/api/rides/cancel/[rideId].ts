@@ -16,13 +16,13 @@ export default async function handler(
       const ride = await prisma.ride.update({
         where: { id: rideId },
         data: { status: 'Cancelled' },
-        include: { driver: true } 
+        include: { driver: true, user: true } 
       });
 
     
       if (ride.driver && ride.driver.phone) {
         await twilioClient.messages.create({
-          body: `Ride with ID ${rideId} has been cancelled.`,
+          body: `Ride with ${ride.user.name} has been cancelled.`,
           from: process.env.TWILIO_PHONE_NUMBER,
           to: ride.driver.phone
         });
