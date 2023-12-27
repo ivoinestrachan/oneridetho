@@ -56,6 +56,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
 
+    /*
+    const drivers = await prisma.driver.findMany({
+      select: {
+        phone: true
+      }
+    });
+    const driverNumbers = drivers.map(driver => driver.phone).filter(phone => phone !== null);
+
+    */
     const driverNumbers = ["12424251480"];
     const messageBody = `New Ride Request:
 Pickup: ${pickupLocation},
