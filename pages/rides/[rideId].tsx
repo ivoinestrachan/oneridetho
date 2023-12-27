@@ -12,6 +12,7 @@ import {
   Marker,
 } from '@react-google-maps/api';
 import Rating from '@/components/Rating';
+import { Spinner } from '@/components/Spinner';
 
 interface LocationData {
   lat: number;
@@ -197,7 +198,7 @@ const RideDetails = () => {
 
 
 
-  if (!ride && !error) return <p>Loading...</p>;
+  if (!ride && !error) return <Spinner />;
   if (error) return <p>Error: {error.message}</p>;
 
   if (ride?.status === 'Completed') {

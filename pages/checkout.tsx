@@ -3,6 +3,7 @@ import { IoMdPerson } from "react-icons/io";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
+import { Spinner } from "@/components/Spinner";
 
 
 interface Stop {
@@ -57,7 +58,10 @@ const Checkout = () => {
     router.push("/book?editing=true");
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleCheckout = async () => {
+    setIsLoading(true);
     if (!paymentMethod) {
       console.error('No payment method selected.');
       return;
@@ -86,6 +90,7 @@ const Checkout = () => {
     } catch (error) {
       console.error('Error during booking:', error);
     }
+    setIsLoading(false);
   };
 
   const handleFileChange = async (
@@ -237,7 +242,7 @@ const Checkout = () => {
           <button className="py-3 bg-black text-white pl-12 pr-12 rounded-md mt-5"
           onClick={handleCheckout}
           >
-            Confirm Ride
+ {isLoading ? <Spinner /> : 'Confirm Ride'}
           </button>
         </div>
         )}
