@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 import twilio from "twilio";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
@@ -93,7 +94,9 @@ View details: https://driver-oneridetho.vercel.app/dashboard?rideId=${ride.id}`;
       rideId: ride.id,
     });
   } catch (error) {
-    console.error("Error in booking ride:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.log(error) 
+    const message = error instanceof Error ? error.message : "Unexpected Error";
+    return NextResponse.json({ message }, { status: 500 })
+   
   }
 }
