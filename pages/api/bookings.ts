@@ -66,8 +66,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     */
 
-    /* const dispatchers = ["12424212170", "12424701747", "12428086851", "12428108059"]; */
-    const driverNumbers = ["12424251480"];
+     const dispatchers = ["12424212170", "12424701747", "12428086851", "12428108059"]; 
+    /*const driverNumbers = ["12424251480"]; */
     const messageBody = `New Ride Request:
 Pickup: ${pickupLocation},
 Drop-off: ${dropoffLocation},
@@ -75,7 +75,7 @@ Stops: ${stops.map((stop: { address: any; }) => stop.address).join(', ')},
 Passengers: ${passengerCount},
 View details: https://driver-oneridetho.vercel.app/dashboard?rideId=${ride.id}`;
 
-    for (const number of driverNumbers) {
+    for (const number of dispatchers) {
       try {
         await twilioClient.messages.create({
           from: process.env.TWILIO_PHONE_NUMBER,
