@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import twilio from 'twilio';
 
 const prisma = new PrismaClient();
+const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,10 +13,20 @@ export default async function handler(
     const rideId = parseInt(req.query.rideId as string);
 
     try {
-      await prisma.ride.update({
+      const ride = await prisma.ride.update({
         where: { id: rideId },
         data: { status: 'Cancelled' },
+        include: { driver: true } 
       });
+
+    
+      if (ride.driver && ride.driver.phone) {
+        await twilioClient.messages.create({
+          body: `Ride with ID ${rideId} has been cancelled.`,
+          from: process.env.TWILIO_PHONE_NUMBER,
+          to: ride.driver.phone
+        });
+      }
 
       res.status(200).json({ message: 'Ride cancelled successfully' });
     } catch (error) {
