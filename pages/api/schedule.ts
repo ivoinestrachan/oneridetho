@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import twilio from 'twilio';
 
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const fromPhone = process.env.TWILIO_PHONE; 
+const fromPhone = process.env.TWILIO_PHONE_NUMBER; 
 
 const notificationNumbers =["12424212170", "12424701747", "12428086851", "12428108059"];
 
