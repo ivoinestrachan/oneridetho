@@ -7,6 +7,7 @@ const fromPhone = process.env.TWILIO_PHONE_NUMBER;
 
 const notificationNumbers =["12424212170", "12424701747", "12428086851", "12428108059"];
 
+
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
@@ -33,6 +34,14 @@ export default async function handle(
       return res.status(400).send("Missing or invalid required fields");
     }
 
+    const user = await prisma.user.findUnique({
+      where: { id: parsedUserId },
+    });
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
     try {
       const scheduledRide = await prisma.ride.create({
         data: {
@@ -52,9 +61,13 @@ export default async function handle(
         },
       });
 
-      const messageBody = `Scheduled Ride:
-      Pickup Time: ${scheduledPickupTime},
-      Pickup Location: ${pickupLocation},
+      const scheduledPickupDateTime = new Date(scheduledPickupTime);
+      const formattedPickupTime = scheduledPickupDateTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+
+
+      const messageBody = `${user.name} has scheduled a ride!\n
+      Pickup Time: ${formattedPickupTime},\n
+      Pickup Location: ${pickupLocation},\n
       Drop-off Location: ${dropoffLocation},
       Passengers: ${passengerCount}`;
 

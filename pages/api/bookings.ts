@@ -37,6 +37,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(400).json({ message: "You can only add up to 3 stops." });
       return;
     }
+    
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
 
     const ride = await prisma.ride.create({
       data: {
@@ -69,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
      /*const dispatchers = ["12424212170", "12424701747", "12428086851", "12428108059"]; */
     const driverNumbers = ["12424212170", "12424701747", "12428086851", "12428108059"] 
-    const messageBody = `New Ride Request:
+    const messageBody = `${user.name} has scheduled a ride!
 Pickup: ${pickupLocation},
 Drop-off: ${dropoffLocation},
 Stops: ${stops.map((stop: { address: any; }) => stop.address).join(', ')},
