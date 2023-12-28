@@ -138,7 +138,7 @@ const Ride = () => {
     passengers: number,
     stops: number
   ): string => {
-    const baseFare = 9;
+    const baseFare = 10;
     const distanceCharge = distance * 2;
     const passengerCharge = (passengers - 1) * 2;
     const stopCharge = stops * 1;

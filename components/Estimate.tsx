@@ -39,7 +39,7 @@ const Estimate = () => {
   const dropoffInputRef = useRef<HTMLInputElement>(null);
 
   const calculateFare = (distance: number, passengers: number): string => {
-    const baseFare = 9;
+    const baseFare = 10;
     const distanceCharge = distance * 2;
     const passengerCharge = (passengers - 1) * 2;
 
