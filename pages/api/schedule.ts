@@ -62,8 +62,7 @@ export default async function handle(
       });
 
       const scheduledPickupDateTime = new Date(scheduledPickupTime);
-      const formattedPickupTime = scheduledPickupDateTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-
+      const formattedPickupTime = `${scheduledPickupDateTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} ${scheduledPickupDateTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
 
       const messageBody = `${user.name} has scheduled a ride!\n
       Pickup Time: ${formattedPickupTime},\n
