@@ -2,7 +2,7 @@ import Image from "next/image";
 import logo from "../assets/logo.svg";
 import Link from "next/link";
 import { useSession, signOut, getSession } from "next-auth/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import React from "react";
 
@@ -12,7 +12,31 @@ const Navbar = () => {
   const [profileImage, setProfileImage] = useState(session?.user?.image);
   const [isWebcamVisible, setIsWebcamVisible] = useState(false);
   const webcamRef = useRef<Webcam>(null);
+  const [showProfileOptions, setShowProfileOptions] = useState(false);
+  const [viewProfilePic, setViewProfilePic] = useState(false);
+  const [showUploadPrompt, setShowUploadPrompt] = useState(false);
 
+
+
+  useEffect(() => {
+    if (session && !session.user.image) {
+      setShowUploadPrompt(true);
+    }
+  }, [session]);
+
+  const closeUploadPrompt = () => {
+    setShowUploadPrompt(false);
+  };
+
+  const toggleProfileOptions = () => {
+    setShowProfileOptions(!showProfileOptions);
+    setViewProfilePic(false); 
+  };
+
+  const handleViewProfile = () => {
+    setViewProfilePic(true);
+    setShowProfileOptions(false);
+  };
 
   const handleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -25,6 +49,7 @@ const Navbar = () => {
 
   const toggleWebcam = () => {
     setIsWebcamVisible(!isWebcamVisible);
+    closeUploadPrompt();
   };
 
 
@@ -46,6 +71,9 @@ const Navbar = () => {
             canvas.width = size;
             canvas.height = size;
   
+            ctx.fillStyle = "rgba(0,0,0,0)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             ctx.beginPath();
             ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
             ctx.clip();
@@ -91,7 +119,24 @@ const Navbar = () => {
  
 
   return (
-    <div className="bg-black">
+    <div className="bg-black" >
+
+{showUploadPrompt && (
+        <div className="absolute inset-0 flex justify-center items-center bg-black/50">
+          <div className="popup bg-white p-4 rounded">
+            <p>Please upload a profile image.</p>
+            <button onClick={toggleWebcam} className="py-2 bg-black pl-2 pr-2 text-white rounded-md mt-2">Upload Image</button>
+          </div>
+        </div>
+      )}
+
+{viewProfilePic && (
+  <div className="absolute inset-0 flex justify-center items-center"  onClick={() => setViewProfilePic(false)}>
+    <Image src={session?.user.image as string} alt="Profile Image"  objectFit="contain"  width={200} height={200}/>
+  </div>
+)}
+
+
   {isWebcamVisible && (
         <div className="absolute h-[100vh]">
           <Webcam
@@ -147,7 +192,7 @@ const Navbar = () => {
             </>
           ) : (
             <div className="flex items-center gap-3">
-              <div  onClick={toggleWebcam}className="cursor-pointer">
+              <div  onClick={toggleProfileOptions} className="cursor-pointer">
                 <Image
                   src={
                     session.user?.image ||
@@ -160,9 +205,22 @@ const Navbar = () => {
                 />
               </div>
 
+
               <div onClick={handleDropdown} className="cursor-pointer bg-white py-2 pr-4 pl-4 text-black rounded-full">
                 {session.user?.name}
               </div>
+
+              {showProfileOptions && (
+          <div className="absolute bg-white text-black p-2 rounded shadow sm:mt-[120px] mt-[160px] sm:ml-[10px] ml-[80px]">
+          <div>
+            <button onClick={handleViewProfile}>View Profile</button>
+            </div>
+
+            <div>
+            <button onClick={toggleWebcam}>Upload Profile</button>
+            </div>
+          </div>
+        )}
               {dropdownOpen && (
                 <div className="absolute bg-white p-2 rounded shadow sm:mt-[120px] mt-[160px]  sm:w-[10%] w-[30%] sm:ml-[50px] ml-[80px]">
                   <ul>

@@ -8,20 +8,24 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter(); 
+  const [loginError, setLoginError] = useState('');
+
+
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
+    setLoginError(''); 
     const result = await signIn('credentials', {
       redirect: false,
       email,
       password
     });
-
+  
     if (result && !result.error) {
       console.log('Signed in successfully!');
-      router.push('/'); 
+      router.push('/');
     } else if (result) {
-      console.error('Failed to sign in:', result.error);
+      setLoginError('Email or password is incorrect');
     }
   };
 
@@ -57,6 +61,7 @@ export default function Login() {
           className="bg-black py-3 pl-[130px] pr-[130px] text-white rounded-md"
           >Login</button>
         </div>
+        {loginError && <div className="text-red-500">{loginError}</div>}
       </form>
     </div>
   );
