@@ -233,7 +233,7 @@ const RideDetails = () => {
                 </div>
               </div>
               <div className="flex items-center justify-between w-[98%]">
-                <a href={"tel:12428221495"}>
+                <a href="https://wa.me/12428221495">
                   <div>Customer Service</div>
                   <p className="underline text-blue-400 text-[18px]">822-1495</p>
                 </a>

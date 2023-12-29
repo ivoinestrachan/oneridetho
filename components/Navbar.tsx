@@ -123,9 +123,11 @@ const Navbar = () => {
           <div>
             <ul className="sm:flex items-center gap-5 text-white font-sans font-bold hidden">
               <Link href="/book">
-                <li>Book Now</li>
+                <li>Book a ride</li>
               </Link>
-              <li>Drive</li>
+              <a href="https://whatsform.com/AnbVNN">
+              <li>Apply To Drive</li>
+              </a>
             </ul>
           </div>
         </div>

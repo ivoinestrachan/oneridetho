@@ -195,14 +195,24 @@ const Checkout = () => {
       return <div>Loading...</div>;
   }
 
+  const cashPaymentMessages = (
+    <div className="mt-5 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700">
+      <div className="font-bold">Note:</div>
+      <p>Payment is required upon entry of vehicle.</p>
+      <p>Drivers do not carry change.</p>
+    </div>
+  );
   
 
   return (
     <div className="px-2 mt-5">
       <h1 className="font-bold text-[32px]">Checkout</h1>
+     
       <div >
+         {/*
    <div id="paypal-button-container">
    </div>
+  */}
     {/*
         <div>
           <button className="py-3 bg-black text-white pl-4 pr-4 rounded-md mt-5">
@@ -249,6 +259,7 @@ const Checkout = () => {
         </div>
         )}
       </div>
+      {paymentMethod === 'Cash' && cashPaymentMessages}
       {showProfilePhotoMessage && (
         <div className="mt-5 p-4 bg-red-100 border border-red-400 text-red-700 sm:w-[50%]">
           <p>Please upload a valid  photo to proceed.</p>

@@ -10,6 +10,52 @@ type ContactProps = {
   
   const Contact: React.FC<ContactProps> = ({ setEmail, setPassword, setPhoneNumber }) => {
 
+    const [countryCode, setCountryCode] = useState('1242');
+    const [phoneNumber, setPhoneNumberState] = useState('1242');
+    const [emailError, setEmailError] = useState('');
+
+    const handleCountryChange = (e: any) => {
+      const selectedCountry = e.target.value;
+      const prefix = selectedCountry === 'Bahamas' ? '1242' : selectedCountry === 'United States' ? '1' : '';
+      setCountryCode(prefix);
+      setPhoneNumberState(prefix); 
+    };
+  
+    const handlePhoneNumberChange = (e: any) => {
+      let inputNumber = e.target.value.slice(countryCode.length);
+      if (inputNumber.length > (10 - countryCode.length)) {
+        inputNumber = inputNumber.slice(0, 11 - countryCode.length); 
+      }
+      const fullPhoneNumber = countryCode + inputNumber;
+      setPhoneNumberState(fullPhoneNumber); 
+      setPhoneNumber(fullPhoneNumber); 
+    };
+    const checkEmailExists = async (email: any) => {
+      try {
+        const response = await fetch(`/api/check-email?email=${email}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        return data.emailExists;
+      } catch (error) {
+        console.error('Error fetching email:', error);
+        return false; 
+      }
+    };
+    
+    const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const emailValue = e.target.value;
+      setEmail(emailValue);
+  
+      const isEmailTaken = await checkEmailExists(emailValue);
+  
+      if (isEmailTaken) {
+        setEmailError('Email is already taken');
+      } else {
+        setEmailError(''); 
+      }
+    };
     
   return (
     <div className="flex justify-center space-y-4 mt-10">
@@ -21,17 +67,27 @@ type ContactProps = {
           <input
             placeholder="Email"
             type="email"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             className="border outline-none py-3 pl-3 w-[300px] border-gray-200 rounded-md "
           />
+           {emailError && <div className="text-red-500 text-sm">{emailError}</div>}
         </div>
-
-        <div className="mt-2 text-center">
+      
+        <div className="mt-2 text-center flex items-center border border-gray-200 rounded-md py-3 pl-3 w-[300px] sm:ml-[50px] ml-[20px]">
+        <div className=" text-center">
+          <select onChange={handleCountryChange} className="outline-none ml-2">
+            <option value="Bahamas">🇧🇸</option>
+            <option value="United States">🇺🇸</option>
+          </select>
+        </div>
           <input
             placeholder="Phone number"
+            autoComplete="off"
+            value={phoneNumber}
             type="number"
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            className="border outline-none py-3 pl-3 w-[300px] border-gray-200 rounded-md "
+            onChange={handlePhoneNumberChange}
+            className="outline-none w-[200px] rounded-md "
+            max={7}
           />
         </div>
 
