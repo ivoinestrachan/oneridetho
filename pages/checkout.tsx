@@ -196,7 +196,7 @@ const Checkout = () => {
   }
 
   const cashPaymentMessages = (
-    <div className="mt-5 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700">
+    <div className="mt-5 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 sm:w-[500px]">
       <div className="font-bold">Note:</div>
       <p>Payment is required upon entry of vehicle.</p>
       <p>Drivers do not carry change.</p>

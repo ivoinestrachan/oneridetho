@@ -21,7 +21,14 @@ const nextConfig = {
         hostname: "**",
       },
     ],
-  }
+  },
+  webpack(config, options) {
+    config.module.rules.push({
+      test: /\.mp4$/,
+      type: 'asset/resource',
+    });
+    return config;
+  },
 }
 
 module.exports = nextConfig;

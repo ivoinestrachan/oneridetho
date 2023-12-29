@@ -5,6 +5,7 @@ import { useSession, signOut, getSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import React from "react";
+import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa";
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -177,6 +178,19 @@ const Navbar = () => {
           </div>
         </div>
 
+        <div className="sm:flex items-center gap-4  hidden ">
+          <a href="https://www.facebook.com/profile.php?id=100075942281898">
+    <FaFacebook  size={30} className="text-white hover:text-blue-600" />
+    </a>
+    <a href="https://www.tiktok.com/@oneridetho?is_from_webapp=1&sender_device=pc">
+    <FaTiktok  size={30} className="text-white hover:text-blue-600"/>
+    </a>
+
+    <a href="https://www.instagram.com/oneridetho242/">
+    <FaInstagram size={30} className="text-white hover:text-blue-600" />
+    </a>
+        </div>
+
         <div className="flex items-center gap-5 text-white ">
           {!session ? (
             <>
@@ -211,7 +225,7 @@ const Navbar = () => {
               </div>
 
               {showProfileOptions && (
-          <div className="absolute bg-white text-black p-2 rounded shadow sm:mt-[120px] mt-[160px] sm:ml-[10px] ml-[80px]">
+          <div className="absolute bg-white text-black p-2 rounded shadow sm:mt-[120px] mt-[160px] sm:ml-[10px] ml-[80px] z-10">
           <div>
             <button onClick={handleViewProfile}>View Profile</button>
             </div>
@@ -222,7 +236,7 @@ const Navbar = () => {
           </div>
         )}
               {dropdownOpen && (
-                <div className="absolute bg-white p-2 rounded shadow sm:mt-[120px] mt-[160px]  sm:w-[10%] w-[30%] sm:ml-[50px] ml-[80px]">
+                <div className="absolute bg-white p-2 rounded shadow sm:mt-[120px] mt-[160px]  sm:w-[10%] w-[30%] sm:ml-[50px] ml-[80px] z-10">
                   <ul>
                     <Link href="/book">
                       <li className="text-black hover:bg-gray-200 w-full sm:hidden">

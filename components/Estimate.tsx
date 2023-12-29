@@ -230,7 +230,7 @@ const Estimate = () => {
   };
 
   return (
-    <div className="bg-gray-100 sm:pr-[100px] sm:pl-[40px] py-4 pl-3 pr-3 rounded-md">
+    <div className="bg-gray-100 sm:pr-[100px] sm:pl-[40px] py-4 pl-3 pr-3 rounded-md shadow-xl">
       <div className="space-y-4">
         <div className="sm:pt-5 font-bold text-[24px]">Book a Ride</div>
         <button onClick={getUserLocation}>Use Current Location</button>
