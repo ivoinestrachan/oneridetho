@@ -70,7 +70,7 @@ export default function Home() {
         </div>
       </div>
 
-<div className="text-center mt-5 sm:block hidden">Our Drivers</div>
+<div className="text-center mt-5 sm:block hidden font-bold text-[24px]">Our Drivers</div>
       <div className="sm:flex hidden mt-10 justify-between items-center w-[90%]">
         <div className="px-20">
           <Image src={driver} width={300} height={300} alt="driver" />
