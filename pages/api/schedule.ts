@@ -69,7 +69,7 @@ export default async function handle(
       Pickup Location: ${pickupLocation}\n
       Drop-off Location: ${dropoffLocation}\n
       Passengers: ${passengerCount}\n
-      View Details: https://driver-oneridetho.vercel.app/dashboard?ride=${scheduledRide.id}`;
+      View Details: https://driver-oneridetho.vercel.app/dashboard?rideId=${scheduledRide.id}`;
 
       notificationNumbers.forEach(async (number) => {
         try {
