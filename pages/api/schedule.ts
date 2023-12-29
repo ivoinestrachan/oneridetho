@@ -65,10 +65,11 @@ export default async function handle(
       const formattedPickupTime = `${scheduledPickupDateTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} ${scheduledPickupDateTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`;
 
       const messageBody = `${user.name} has scheduled a ride!\n
-      Pickup Time: ${formattedPickupTime},\n
-      Pickup Location: ${pickupLocation},\n
-      Drop-off Location: ${dropoffLocation},
-      Passengers: ${passengerCount}`;
+      Pickup Time: ${formattedPickupTime}\n
+      Pickup Location: ${pickupLocation}\n
+      Drop-off Location: ${dropoffLocation}\n
+      Passengers: ${passengerCount}\n
+      View Details: https://driver-oneridetho.vercel.app/dashboard?ride=${scheduledRide.id}`;
 
       notificationNumbers.forEach(async (number) => {
         try {
