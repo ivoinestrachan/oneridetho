@@ -58,7 +58,6 @@ const Navbar = () => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
   
-       
       if (imageSrc) {
         const img = document.createElement('img');
         img.src = imageSrc;
@@ -67,18 +66,16 @@ const Navbar = () => {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
   
-          if (ctx) {
-            const size = Math.min(img.width, img.height);
-            canvas.width = size;
-            canvas.height = size;
+         
+          const desiredWidth = 500;
+          const desiredHeight = 500;
   
-            ctx.fillStyle = "rgba(0,0,0,0)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.beginPath();
-            ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
-            ctx.clip();
-            ctx.drawImage(img, 5, 5, size, size);
+          if (ctx) {
+            canvas.width = desiredWidth;
+            canvas.height = desiredHeight;
+  
+    
+            ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, desiredWidth, desiredHeight);
   
             canvas.toBlob(blob => {
               if (blob) {
@@ -92,6 +89,8 @@ const Navbar = () => {
       }
     }
   }, [webcamRef]);
+  
+  
   
   
 
@@ -132,14 +131,14 @@ const Navbar = () => {
       )}
 
 {viewProfilePic && (
-  <div className="absolute inset-0 flex justify-center items-center"  onClick={() => setViewProfilePic(false)}>
-    <Image src={session?.user.image as string} alt="Profile Image"  objectFit="contain"  width={200} height={200}/>
+  <div className="absolute inset-0 flex justify-center items-center z-10"  onClick={() => setViewProfilePic(false)}>
+    <Image src={session?.user.image as string} alt="Profile Image"  objectFit="contain"  width={350} height={350} className="rounded-full"/>
   </div>
 )}
 
 
   {isWebcamVisible && (
-        <div className="absolute h-[100vh]">
+        <div className="absolute h-[100vh] z-10">
           <Webcam
             audio={false}
             ref={webcamRef}
@@ -243,7 +242,7 @@ const Navbar = () => {
                         Book a Ride
                       </li>
                     </Link>
-                    <Link href="/apply">
+                    <Link href="https://whatsform.com/AnbVNN">
                       <li className="text-black hover:bg-gray-200 w-full sm:hidden">
                         Drive
                       </li>

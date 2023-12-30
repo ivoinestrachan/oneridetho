@@ -270,9 +270,10 @@ const Estimate = () => {
                 type="number"
                 className="border-black border-2 rounded-[4px] w-[40px] py-1 outline-none text-center"
                 value={passengers}
-                onChange={(e) =>
-                  setPassengers(Math.max(1, parseInt(e.target.value)))
-                }
+                onChange={(e) => {
+                  const newPassengerCount = Math.max(1, Math.min(4, parseInt(e.target.value)));
+                  setPassengers(newPassengerCount);
+                }}
               />
             </div>
           </div>

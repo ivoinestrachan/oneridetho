@@ -24,7 +24,12 @@ interface LocationData {
 const RideDetails = () => {
   const router = useRouter();
   const { rideId } = router.query;
-  const { data: ride, error } = useSWR(rideId ? `/api/rides/${rideId}` : null, url => axios.get(url).then(res => res.data));
+  const fetcher = (url: string) => axios.get(url).then(res => res.data);
+  const { data: ride, error } = useSWR(
+    rideId ? `/api/rides/${rideId}` : null, 
+    fetcher, 
+    { refreshInterval: 1000 }
+  );
   const [mapLocation, setMapLocation] = useState<LocationData | null>(null);
   const [directions, setDirections] = useState(null);
   const [isMapsApiLoaded, setIsMapsApiLoaded] = useState(false);
