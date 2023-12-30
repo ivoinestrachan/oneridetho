@@ -123,7 +123,7 @@ const Navbar = () => {
     <div className="bg-black" >
 
 {showUploadPrompt && (
-        <div className="absolute inset-0 flex justify-center items-center bg-black/50">
+        <div className="absolute inset-0 flex justify-center items-center bg-black/50 z-10 h-[100vh]">
           <div className="popup bg-white p-4 rounded">
             <p>Please upload a profile image.</p>
             <button onClick={toggleWebcam} className="py-2 bg-black pl-2 pr-2 text-white rounded-md mt-2">Upload Image</button>
