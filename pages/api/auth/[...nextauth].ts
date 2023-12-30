@@ -70,6 +70,13 @@ export const authOptions = {
         }
 
         if (account) {
+          const isPasswordMatch = await bcrypt.compare(credentials.password, account.password);
+          if (!isPasswordMatch) {
+         
+            return null;
+          }
+
+
           return { id: account.userId.toString(), email: account.email };
         } else {
           throw new Error("Unable to create or authenticate account");
