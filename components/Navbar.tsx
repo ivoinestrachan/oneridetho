@@ -122,7 +122,8 @@ const Navbar = () => {
     <div className="bg-black" >
 
 {showUploadPrompt && (
-        <div className="absolute inset-0 flex justify-center items-center bg-black/50 z-10 h-[100vh]">
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+
           <div className="popup bg-white p-4 rounded">
             <p>Please upload a profile image.</p>
             <button onClick={toggleWebcam} className="py-2 bg-black pl-2 pr-2 text-white rounded-md mt-2">Upload Image</button>
@@ -146,7 +147,7 @@ const Navbar = () => {
             className="z-10 h-[100vh] object-cover w-full"
           />
            <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center">
-            <div className="border-2 border-white rounded-full w-[300px] h-[300px] opacity-50" />
+            <div className="w-[300px] h-[300px] opacity-50" />
           <button onClick={capture} className="bg-white h-[70px] w-[70px] rounded-full z-10 sm:bottom-[150px] bottom-5 text-center absolute  left-1/2 transform -translate-x-1/2 -translate-y-1/2"></button>
         </div>
         </div>
