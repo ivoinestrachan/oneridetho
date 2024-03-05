@@ -61,6 +61,14 @@ export default function Login() {
           className="bg-black py-3 pl-[130px] pr-[130px] text-white rounded-md"
           >Login</button>
         </div>
+
+        <div className="mt-5">
+            <button 
+              onClick={() => signIn('google', { callbackUrl: '/' })}
+            className="bg-blue-400 py-3 pl-[100px] pr-[70px] text-white rounded-md  ">
+              Login with Google
+            </button>
+          </div>
         {loginError && <div className="text-red-500">{loginError}</div>}
       </form>
     </div>

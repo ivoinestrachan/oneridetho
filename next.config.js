@@ -11,7 +11,9 @@ const nextConfig = {
     TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
     TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
     TWILIO_WHATSAPP_NUMBER: process.env.TWILIO_PHONE_NUMBER,
-    PAYPAL_CLI: process.env.PAYPAL_CLI
+    PAYPAL_CLI: process.env.PAYPAL_CLI,
+    GOOGLE_CLIENT_ID:  process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET
   },
 
   images: {
