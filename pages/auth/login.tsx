@@ -61,7 +61,7 @@ export default function Login() {
           className="bg-black py-3 pl-[130px] pr-[130px] text-white rounded-md"
           >Login</button>
         </div>
-
+  {/* 
         <div className="mt-5">
             <button 
               onClick={() => signIn('google', { callbackUrl: '/' })}
@@ -69,6 +69,7 @@ export default function Login() {
               Login with Google
             </button>
           </div>
+  */}
         {loginError && <div className="text-red-500">{loginError}</div>}
       </form>
     </div>

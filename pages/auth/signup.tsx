@@ -253,6 +253,7 @@ const Signup = () => {
           >
             {step === 2 ? "Sign Up" : "Next"}
           </button>
+          {/* 
           <div className="mt-5">
             <button 
               onClick={() => signIn('google', { callbackUrl: '/' })}
@@ -260,6 +261,7 @@ const Signup = () => {
               Login with Google
             </button>
           </div>
+          */}
         </div>
       </div>
     </div>
