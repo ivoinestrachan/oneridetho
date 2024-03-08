@@ -46,10 +46,8 @@ export default function Home() {
 
   return (
     <>
-      <div className="sm:flex items-center sm:justify-between justify-center sm:w-full sm:h-[650px] h-[90vh] hero">
-        <video autoPlay muted loop ref={videoRef} className="videoBackground">
-          <source src="/videos/testvid.mp4" type="video/mp4" />
-        </video>
+      <div className="sm:flex items-center sm:justify-between justify-center sm:w-full sm:h-[650px] h-[90vh] hero bg-white">
+      
 
         <div className="sm:block hidden"></div>
         <div className="sm:px-10 px-2 sm:pt-auto pt-5 sm:mt-[150px] mt-10">
